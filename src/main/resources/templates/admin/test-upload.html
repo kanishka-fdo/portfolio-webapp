@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Upload Your Photo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .preview-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 30px;
+        }
+
+        .preview {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 5px solid #a78bfa;
+            object-fit: cover;
+            display: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .preview.show {
+            display: block;
+        }
+
+        .placeholder {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 3px dashed #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f9f9f9;
+            font-size: 4rem;
+            color: #ccc;
+        }
+
+        .placeholder.hide {
+            display: none;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 10px;
+        }
+
+        .btn-choose {
+            background: linear-gradient(135deg, #a78bfa 0%, #ec4899 100%);
+            color: white;
+        }
+
+        .btn-upload {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            display: none;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            display: none;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .status.show {
+            display: block;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 2px solid #bee5eb;
+        }
+
+        .url-box {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            word-break: break-all;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            display: none;
+        }
+
+        .url-box.show {
+            display: block;
+        }
+
+        .copy-btn {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .copy-btn:hover {
+            background: #5a6268;
+        }
+
+        .instructions {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 5px solid #ffc107;
+        }
+
+        .instructions h3 {
+            color: #856404;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .instructions ol {
+            margin-left: 20px;
+            color: #856404;
+        }
+
+        .instructions li {
+            margin-bottom: 8px;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .back-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+
+        .file-info {
+            text-align: center;
+            color: #666;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>📸 Upload Your Photo</h1>
+    <p class="subtitle">Upload your professional profile photo</p>
+
+    <div class="instructions">
+        <h3>📋 How to use:</h3>
+        <ol>
+            <li>Click "Choose Photo" and select your image</li>
+            <li>Click "Upload to Server"</li>
+            <li>Wait for success message</li>
+            <li>Go back to CV list and see your photo!</li>
+        </ol>
+    </div>
+
+    <div class="preview-container">
+        <div id="placeholder" class="placeholder">👤</div>
+        <img id="preview" class="preview" alt="Preview">
+    </div>
+
+    <div id="fileInfo" class="file-info"></div>
+
+    <input type="file" id="fileInput" accept="image/*">
+    <button class="btn btn-choose" onclick="document.getElementById('fileInput').click()">
+        Choose Photo
+    </button>
+    <button class="btn btn-upload" id="uploadBtn">
+        Upload to Server
+    </button>
+
+    <div id="status" class="status"></div>
+    <div id="urlBox" class="url-box">
+        <strong>Photo URL:</strong><br>
+        <span id="photoUrl"></span>
+        <br><br>
+        <button class="copy-btn" onclick="copyUrl()">Copy URL</button>
+    </div>
+
+    <div class="back-link">
+        <a href="/admin/cv">← Back to CV Management</a>
+    </div>
+</div>
+
+<script>
+    const fileInput = document.getElementById('fileInput');
+    const preview = document.getElementById('preview');
+    const placeholder = document.getElementById('placeholder');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const status = document.getElementById('status');
+    const urlBox = document.getElementById('urlBox');
+    const photoUrl = document.getElementById('photoUrl');
+    const fileInfo = document.getElementById('fileInfo');
+    let selectedFile = null;
+
+    fileInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        selectedFile = file;
+
+        // Show file info
+        const fileSize = (file.size / 1024 / 1024).toFixed(2);
+        fileInfo.textContent = `File: ${file.name} (${fileSize} MB)`;
+
+        // Show preview
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            preview.classList.add('show');
+            placeholder.classList.add('hide');
+            uploadBtn.style.display = 'block';
+            status.classList.remove('show');
+            urlBox.classList.remove('show');
+        };
+        reader.readAsDataURL(file);
+
+        console.log('File selected:', file.name, file.size, file.type);
+    });
+
+    uploadBtn.addEventListener('click', async function() {
+        if (!selectedFile) {
+            alert('Please select a file first!');
+            return;
+        }
+
+        // Disable button
+        uploadBtn.disabled = true;
+        uploadBtn.textContent = 'Uploading...';
+
+        // Show status
+        status.textContent = '⏳ Uploading your photo...';
+        status.className = 'status info show';
+        urlBox.classList.remove('show');
+
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+
+        console.log('Starting upload...');
+
+        try {
+            const response = await fetch('/admin/upload-profile-photo', {
+                method: 'POST',
+                body: formData
+            });
+
+            console.log('Response status:', response.status);
+            const resultText = await response.text();
+            console.log('Server response:', resultText);
+
+            if (resultText.startsWith('error:')) {
+                status.textContent = '❌ Upload Failed: ' + resultText.replace('error:', '');
+                status.className = 'status error show';
+            } else {
+                status.textContent = '✅ Upload Successful! Your photo has been uploaded.';
+                status.className = 'status success show';
+                photoUrl.textContent = resultText;
+                urlBox.classList.add('show');
+
+                // Auto-update CV after 2 seconds
+                setTimeout(() => {
+                    updateCV(resultText);
+                }, 2000);
+            }
+        } catch (error) {
+            console.error('Upload error:', error);
+            status.textContent = '❌ Upload failed: ' + error.message;
+            status.className = 'status error show';
+        } finally {
+            uploadBtn.disabled = false;
+            uploadBtn.textContent = 'Upload to Server';
+        }
+    });
+
+    async function updateCV(photoUrl) {
+        status.textContent = '🔄 Updating your CV with the new photo...';
+        status.className = 'status info show';
+
+        try {
+            const formData = new FormData();
+            formData.append('photoUrl', photoUrl);
+
+            const response = await fetch('/admin/update-cv-photo', {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.text();
+            console.log('Update result:', result);
+
+            if (result.startsWith('success:')) {
+                status.textContent = '✅ SUCCESS! Your photo has been saved to your CV! Go back to see it.';
+                status.className = 'status success show';
+
+                // Add a button to go back
+                setTimeout(() => {
+                    if (confirm('Photo saved successfully! Go to CV list now?')) {
+                        window.location.href = '/admin/cv';
+                    }
+                }, 1500);
+            } else {
+                status.textContent = '⚠️ Photo uploaded but failed to update CV: ' + result;
+                status.className = 'status error show';
+            }
+        } catch (error) {
+            console.error('Update error:', error);
+            status.textContent = '⚠️ Photo uploaded but failed to update CV. You may need to update manually.';
+            status.className = 'status error show';
+        }
+    }
+
+    function copyUrl() {
+        const url = photoUrl.textContent;
+        navigator.clipboard.writeText(url).then(() => {
+            alert('URL copied to clipboard!');
+        });
+    }
+</script>
+</body>
+</html>

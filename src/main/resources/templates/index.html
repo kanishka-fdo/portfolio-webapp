@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${cv != null ? cv.fullName + ' - Portfolio' : 'Portfolio - Kanishka Fernando'}">Portfolio - Kanishka Fernando</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1f3a 0%, #2d1b4e 100%);
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 5%;
+            background: rgba(26, 31, 58, 0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #a78bfa 0%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover { color: #a78bfa; }
+
+        .cta-btn {
+            background: linear-gradient(135deg, #a78bfa 0%, #ec4899 100%);
+            color: #fff;
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.3s;
+        }
+
+        .cta-btn:hover { transform: translateY(-2px); }
+
+        .hero {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            padding: 4rem 5%;
+            align-items: center;
+            min-height: calc(100vh - 80px);
+        }
+
+        .hero-content h2 {
+            font-size: 1.2rem;
+            color: #a78bfa;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero-content h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #fff 0%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-content .role {
+            font-size: 2rem;
+            color: #a78bfa;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero-content .location {
+            font-size: 1.2rem;
+            color: #9ca3af;
+            margin-bottom: 2rem;
+        }
+
+        .hero-content .description {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #d1d5db;
+            margin-bottom: 2rem;
+        }
+
+        .contact-badges {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .contact-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(167, 139, 250, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            color: #d1d5db;
+            border: 1px solid rgba(167, 139, 250, 0.3);
+        }
+
+        .hero-buttons { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+
+        .btn {
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #a78bfa 0%, #ec4899 100%);
+            color: #fff;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #fff;
+            border: 2px solid #a78bfa;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(167, 139, 250, 0.3);
+        }
+
+        .hero-image {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .profile-photo-container {
+            position: relative;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 5px solid #a78bfa;
+            box-shadow: 0 20px 60px rgba(167, 139, 250, 0.4);
+            background: linear-gradient(135deg, rgba(167, 139, 250, 0.2) 0%, rgba(236, 72, 153, 0.2) 100%);
+            animation: profileFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes profileFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .profile-photo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .profile-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8rem;
+            color: #a78bfa;
+        }
+
+        .skills-banner {
+            background: linear-gradient(135deg, #ec4899 0%, #a78bfa 50%, #6366f1 100%);
+            padding: 1.5rem;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .skills-scroll {
+            display: flex;
+            gap: 3rem;
+            animation: scroll 20s linear infinite;
+            white-space: nowrap;
+        }
+
+        .skill-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .skill-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* Projects Section */
+        .projects-section {
+            padding: 4rem 5%;
+            background: rgba(26, 31, 58, 0.5);
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            background: linear-gradient(135deg, #fff 0%, #a78bfa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .project-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(167, 139, 250, 0.2);
+            transition: all 0.3s;
+        }
+
+        .project-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(167, 139, 250, 0.3);
+            border-color: #a78bfa;
+        }
+
+        .project-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: linear-gradient(135deg, #a78bfa 0%, #ec4899 100%);
+        }
+
+        .project-image-placeholder {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #a78bfa 0%, #ec4899 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+        }
+
+        .project-content {
+            padding: 1.5rem;
+        }
+
+        .project-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+
+        .project-description {
+            color: #d1d5db;
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .tech-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .tech-tag {
+            background: rgba(167, 139, 250, 0.2);
+            color: #a78bfa;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            border: 1px solid rgba(167, 139, 250, 0.3);
+        }
+
+        .project-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .project-link {
+            padding: 0.6rem 1.5rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .project-link-primary {
+            background: linear-gradient(135deg, #a78bfa 0%, #ec4899 100%);
+            color: #fff;
+        }
+
+        .project-link-secondary {
+            background: transparent;
+            color: #a78bfa;
+            border: 2px solid #a78bfa;
+        }
+
+        .project-link:hover {
+            transform: translateY(-2px);
+        }
+
+        .no-projects {
+            text-align: center;
+            padding: 3rem;
+            color: #9ca3af;
+        }
+
+        @media (max-width: 768px) {
+            .hero {
+                grid-template-columns: 1fr;
+                text-align: center;
+                padding: 2rem 5%;
+            }
+            .hero-content h1 { font-size: 2.5rem; }
+            .hero-buttons { justify-content: center; }
+            .contact-badges { justify-content: center; }
+            .profile-photo-container { width: 300px; height: 300px; }
+            .nav-links { display: none; }
+            .projects-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="logo" th:text="${cv != null ? cv.fullName : 'Portfolio'}">Portfolio</div>
+    <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/projects">Projects</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/contact">Contact</a></li>
+    </ul>
+    <a th:href="${cv != null and cv.email != null ? 'mailto:' + cv.email : '/contact'}" class="cta-btn">Let's Talk</a>
+</nav>
+
+<section class="hero">
+    <div class="hero-content">
+        <h2>Hello, I'm</h2>
+
+        <h1 th:text="${cv != null ? cv.fullName : 'Kanishka Fernando'}">Kanishka Fernando</h1>
+        <div class="role" th:text="${cv != null ? cv.title : 'Full Stack Developer'}">Full Stack Developer</div>
+        <div class="location" th:text="${cv != null and cv.location != null ? 'in ' + cv.location : 'in Colombo, Sri Lanka'}">in Colombo, Sri Lanka</div>
+
+        <p class="description"
+           th:text="${cv != null and cv.summary != null ? cv.summary : 'Passionate Information Systems Engineering student at SLIIT with strong skills in full-stack development.'}">
+            Passionate Information Systems Engineering student at SLIIT with strong skills in full-stack development.
+        </p>
+
+        <!-- Contact Badges -->
+        <div class="contact-badges">
+            <div th:if="${cv != null and cv.email != null}" class="contact-badge">
+                <span>📧</span>
+                <span th:text="${cv.email}">email@example.com</span>
+            </div>
+            <div th:if="${cv != null and cv.phone != null}" class="contact-badge">
+                <span>📱</span>
+                <span th:text="${cv.phone}">+94 70 460 6206</span>
+            </div>
+        </div>
+
+        <div class="hero-buttons">
+            <a th:href="${cv != null and cv.email != null ? 'mailto:' + cv.email : '/contact'}" class="btn btn-primary">
+                <span>📩</span> Get in Touch
+            </a>
+            <a href="/projects" class="btn btn-secondary">
+                <span>💼</span> View All Works
+            </a>
+            <a th:if="${cv != null and cv.githubUrl != null}"
+               th:href="${cv.githubUrl}"
+               target="_blank"
+               class="btn btn-secondary">
+                <span>🔗</span> GitHub
+            </a>
+            <a th:if="${cv != null and cv.linkedinUrl != null}"
+               th:href="${cv.linkedinUrl}"
+               target="_blank"
+               class="btn btn-secondary">
+                <span>💼</span> LinkedIn
+            </a>
+        </div>
+    </div>
+
+    <div class="hero-image">
+        <div class="profile-photo-container">
+            <!-- Profile Photo if uploaded -->
+            <img th:if="${cv != null and cv.profilePhotoUrl != null and !#strings.isEmpty(cv.profilePhotoUrl)}"
+                 th:src="@{${cv.profilePhotoUrl}}"
+                 th:alt="${cv.fullName}"/>
+
+            <!-- Placeholder if no photo -->
+            <div th:unless="${cv != null and cv.profilePhotoUrl != null and !#strings.isEmpty(cv.profilePhotoUrl)}"
+                 class="profile-placeholder">
+                👤
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="skills-banner">
+    <div class="skills-scroll">
+        <div class="skill-item"><div class="skill-icon">☕</div><span>Java Developer</span></div>
+        <div class="skill-item"><div class="skill-icon">⚛️</div><span>React Developer</span></div>
+        <div class="skill-item"><div class="skill-icon">💎</div><span>UI/UX Enthusiast</span></div>
+        <div class="skill-item"><div class="skill-icon">🔷</div><span>Problem Solver</span></div>
+        <div class="skill-item"><div class="skill-icon">⚡</div><span>Spring Boot Expert</span></div>
+        <div class="skill-item"><div class="skill-icon">🗄️</div><span>Database Design</span></div>
+        <div class="skill-item"><div class="skill-icon">🚀</div><span>Full Stack</span></div>
+
+        <!-- Duplicate for seamless loop -->
+        <div class="skill-item"><div class="skill-icon">☕</div><span>Java Developer</span></div>
+        <div class="skill-item"><div class="skill-icon">⚛️</div><span>React Developer</span></div>
+        <div class="skill-item"><div class="skill-icon">💎</div><span>UI/UX Enthusiast</span></div>
+        <div class="skill-item"><div class="skill-icon">🔷</div><span>Problem Solver</span></div>
+        <div class="skill-item"><div class="skill-icon">⚡</div><span>Spring Boot Expert</span></div>
+        <div class="skill-item"><div class="skill-icon">🗄️</div><span>Database Design</span></div>
+        <div class="skill-item"><div class="skill-icon">🚀</div><span>Full Stack</span></div>
+    </div>
+</div>
+
+<!-- Featured Projects Section -->
+<section class="projects-section" th:if="${featured != null and !#lists.isEmpty(featured)}">
+    <h2 class="section-title">⭐ Featured Projects</h2>
+    <div class="projects-grid">
+        <div th:each="project : ${featured}" class="project-card">
+            <!-- Project Image -->
+            <img th:if="${project.imageUrl != null and !#strings.isEmpty(project.imageUrl)}"
+                 th:src="@{${project.imageUrl}}"
+                 th:alt="${project.title}"
+                 class="project-image"/>
+
+            <div th:unless="${project.imageUrl != null and !#strings.isEmpty(project.imageUrl)}"
+                 class="project-image-placeholder">
+                📁
+            </div>
+
+            <div class="project-content">
+                <h3 class="project-title" th:text="${project.title}">Project Title</h3>
+                <p class="project-description" th:text="${project.shortDescription}">
+                    Project description goes here
+                </p>
+
+                <!-- Tech Stack Tags -->
+                <div class="tech-tags" th:if="${project.techStack != null}">
+                    <span th:each="tech : ${#strings.arraySplit(project.techStack, ',')}"
+                          class="tech-tag"
+                          th:text="${#strings.trim(tech)}">
+                        Tech
+                    </span>
+                </div>
+
+                <!-- Project Links -->
+                <div class="project-links">
+                    <a th:if="${project.liveUrl != null and !#strings.isEmpty(project.liveUrl)}"
+                       th:href="${project.liveUrl}"
+                       target="_blank"
+                       class="project-link project-link-primary">
+                        <span>🔗</span> Live Demo
+                    </a>
+                    <a th:if="${project.githubUrl != null and !#strings.isEmpty(project.githubUrl)}"
+                       th:href="${project.githubUrl}"
+                       target="_blank"
+                       class="project-link project-link-secondary">
+                        <span>💻</span> Code
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- All Projects Section -->
+<section class="projects-section" th:if="${projects != null and !#lists.isEmpty(projects)}">
+    <h2 class="section-title">📂 All Projects</h2>
+    <div class="projects-grid">
+        <div th:each="project : ${projects}" class="project-card">
+            <!-- Project Image -->
+            <img th:if="${project.imageUrl != null and !#strings.isEmpty(project.imageUrl)}"
+                 th:src="@{${project.imageUrl}}"
+                 th:alt="${project.title}"
+                 class="project-image"/>
+
+            <div th:unless="${project.imageUrl != null and !#strings.isEmpty(project.imageUrl)}"
+                 class="project-image-placeholder">
+                📁
+            </div>
+
+            <div class="project-content">
+                <h3 class="project-title" th:text="${project.title}">Project Title</h3>
+                <p class="project-description" th:text="${project.shortDescription}">
+                    Project description goes here
+                </p>
+
+                <!-- Tech Stack Tags -->
+                <div class="tech-tags" th:if="${project.techStack != null}">
+                    <span th:each="tech : ${#strings.arraySplit(project.techStack, ',')}"
+                          class="tech-tag"
+                          th:text="${#strings.trim(tech)}">
+                        Tech
+                    </span>
+                </div>
+
+                <!-- Project Links -->
+                <div class="project-links">
+                    <a th:if="${project.liveUrl != null and !#strings.isEmpty(project.liveUrl)}"
+                       th:href="${project.liveUrl}"
+                       target="_blank"
+                       class="project-link project-link-primary">
+                        <span>🔗</span> Live Demo
+                    </a>
+                    <a th:if="${project.githubUrl != null and !#strings.isEmpty(project.githubUrl)}"
+                       th:href="${project.githubUrl}"
+                       target="_blank"
+                       class="project-link project-link-secondary">
+                        <span>💻</span> Code
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+</body>
+</html>

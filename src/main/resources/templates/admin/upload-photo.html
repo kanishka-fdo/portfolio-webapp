@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Upload Photo</title>
+</head>
+<body>
+
+<h2>Upload Profile Photo</h2>
+
+<form th:action="@{/admin/upload-photo}" method="post" enctype="multipart/form-data">
+    <input type="file" name="photo" accept="image/*" required>
+    <button type="submit">Upload</button>
+</form>
+
+<p th:if="${param.success}">✅ Uploaded successfully!</p>
+<p th:if="${param.error}">❌ Upload failed.</p>
+
+<a th:href="@{/}">Back to Home</a>
+
+</body>
+</html>

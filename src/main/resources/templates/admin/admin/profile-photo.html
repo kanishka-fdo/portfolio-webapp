@@ -1,0 +1,228 @@
+// ==================== FILE 1: UploadResourceConfig.java ====================
+package com.kanishka.portfoliowebapp.config;
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+@Configuration
+public class UploadResourceConfig implements WebMvcConfigurer {
+
+@Override
+public void addResourceHandlers(ResourceHandlerRegistry registry) {
+// Get the uploads directory at project root
+Path uploadDir = Paths.get(System.getProperty("user.dir"), "uploads");
+String uploadPath = uploadDir.toFile().getAbsolutePath();
+
+// Ensure directory exists
+File dir = new File(uploadPath);
+if (!dir.exists()) {
+dir.mkdirs();
+System.out.println("✓ Created uploads directory at: " + uploadPath);
+}
+
+System.out.println("==============================================");
+System.out.println("Configuring resource handler for /uploads/**");
+System.out.println("Serving from: " + uploadPath);
+System.out.println("==============================================");
+
+// Map /uploads/** URLs to the physical directory
+registry.addResourceHandler("/uploads/**")
+.addResourceLocations("file:" + uploadPath + "/")
+.setCachePeriod(0); // Disable caching for development
+}
+}
+
+// ==================== FILE 2: FileUploadController.java ====================
+package com.kanishka.portfoliowebapp.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import jakarta.annotation.PostConstruct;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.UUID;
+
+@Controller
+@RequestMapping("/admin")
+public class FileUploadController {
+
+// IMPORTANT: Upload to project root /uploads/ directory
+private final String UPLOAD_DIR = System.getProperty("user.dir") + File.separator + "uploads" + File.separator;
+
+@PostConstruct
+public void init() {
+File uploadDir = new File(UPLOAD_DIR);
+if (!uploadDir.exists()) {
+boolean created = uploadDir.mkdirs();
+if (created) {
+System.out.println("==============================================");
+System.out.println("✓ Created uploads directory at: " + UPLOAD_DIR);
+System.out.println("==============================================");
+} else {
+System.err.println("✗ Failed to create uploads directory at: " + UPLOAD_DIR);
+}
+} else {
+System.out.println("==============================================");
+System.out.println("✓ Uploads directory exists at: " + UPLOAD_DIR);
+
+// List existing files
+File[] files = uploadDir.listFiles();
+if (files != null && files.length > 0) {
+System.out.println("Existing files:");
+for (File file : files) {
+System.out.println("  - " + file.getName());
+}
+}
+System.out.println("==============================================");
+}
+}
+
+@PostMapping("/upload-profile-photo")
+@ResponseBody
+public String uploadProfilePhoto(@RequestParam("file") MultipartFile file) {
+System.out.println("\n==================== PHOTO UPLOAD STARTED ====================");
+System.out.println("File received: " + (file != null ? file.getOriginalFilename() : "NULL"));
+
+try {
+if (file == null || file.isEmpty()) {
+System.out.println("✗ Error: File is empty or null");
+return "error:Please select a file";
+}
+
+String originalFilename = file.getOriginalFilename();
+System.out.println("Original filename: " + originalFilename);
+System.out.println("File size: " + file.getSize() + " bytes (" + (file.getSize() / 1024.0 / 1024.0) + " MB)");
+System.out.println("Content type: " + file.getContentType());
+
+// Validate file type
+if (originalFilename == null ||
+!originalFilename.toLowerCase().matches(".*\\.(jpg|jpeg|png|gif|webp|bmp)$")) {
+System.out.println("✗ Invalid file type");
+return "error:Invalid file type. Please upload JPG, PNG, GIF, or WEBP";
+}
+
+// Generate unique filename
+String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+String newFilename = "profile_" + System.currentTimeMillis() + "_" +
+UUID.randomUUID().toString().substring(0, 8) + extension;
+
+System.out.println("New filename: " + newFilename);
+System.out.println("Upload directory: " + UPLOAD_DIR);
+
+// Save the file
+Path filePath = Paths.get(UPLOAD_DIR + newFilename);
+Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+System.out.println("✓ File saved successfully!");
+System.out.println("File path: " + filePath.toAbsolutePath());
+System.out.println("File exists: " + Files.exists(filePath));
+System.out.println("File size: " + Files.size(filePath) + " bytes");
+
+// Return URL path
+String urlPath = "/uploads/" + newFilename;
+System.out.println("✓ Returning URL: " + urlPath);
+System.out.println("==================== UPLOAD COMPLETE ====================\n");
+
+return urlPath;
+
+} catch (IOException e) {
+System.err.println("✗ Upload failed!");
+System.err.println("Error: " + e.getMessage());
+e.printStackTrace();
+return "error:Upload failed - " + e.getMessage();
+} catch (Exception e) {
+System.err.println("✗ Unexpected error!");
+System.err.println("Error: " + e.getMessage());
+e.printStackTrace();
+return "error:Unexpected error - " + e.getMessage();
+}
+}
+}
+
+// ==================== FILE 3: SecurityConfig.java (VERIFY THIS) ====================
+// Your SecurityConfig already looks correct, but ensure /uploads/** is in permitAll:
+
+@Bean
+SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+http
+.authorizeHttpRequests(auth -> auth
+.requestMatchers("/", "/about", "/projects/**", "/contact",
+"/css/**", "/js/**", "/img/**", "/uploads/**",  // ✓ THIS LINE
+"/api/theme/**", "/api/cv/**").permitAll()  // Also add /api/cv/** if missing
+.requestMatchers("/admin/**").hasRole("ADMIN")
+.anyRequest().authenticated()
+)
+// ... rest of your config
+}
+
+// ==================== TESTING STEPS ====================
+/*
+1. STOP your Spring Boot application completely
+
+2. DELETE the old uploads directory if it exists at:
+- src/main/resources/static/uploads/
+
+3. REPLACE these files:
+- UploadResourceConfig.java
+- FileUploadController.java
+- Verify SecurityConfig.java has /uploads/** in permitAll
+
+4. START your Spring Boot application
+
+5. Check the console logs - you should see:
+✓ Uploads directory exists at: [your-project-path]/uploads/
+Configuring resource handler for /uploads/**
+
+6. Upload a photo via any method:
+- /admin/profile-photo (recommended)
+- /admin/quick-upload
+- CV form
+
+7. Check console for upload success message
+
+8. Verify the file exists at: [your-project-path]/uploads/profile_*.jpg
+
+9. Test access directly in browser:
+http://localhost:8080/uploads/profile_1737007009000_abc12345.jpg
+(replace with your actual filename)
+
+10. Check your pages:
+- http://localhost:8080/ (index - hero section)
+- http://localhost:8080/about (about page)
+- http://localhost:8080/admin/cv (CV list)
+
+TROUBLESHOOTING:
+================
+If photos still don't show:
+
+A. Check console logs during startup for the uploads directory path
+B. Verify the file was actually saved (check the uploads folder)
+C. Try accessing the image URL directly in your browser
+D. Check browser console for 404 errors
+E. Verify SecurityConfig permits /uploads/**
+F. Clear browser cache (Ctrl+F5)
+G. Restart the application completely
+
+COMMON ISSUES:
+==============
+1. "No static resource" error = Resource handler not configured correctly
+2. 404 on /uploads/* = SecurityConfig blocking access
+3. File saves but doesn't display = Wrong directory path
+4. Upload fails silently = Check application.properties for file upload limits
+
+Your application.properties already has:
+spring.servlet.multipart.max-file-size=10MB
+spring.servlet.multipart.max-request-size=10MB
+This is correct.
+*/

@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CV Form - Admin</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5f5f5;
+      padding: 2rem;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 2rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #555;
+      font-weight: 600;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    textarea {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 1rem;
+      font-family: inherit;
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .photo-upload {
+      border: 2px dashed #ddd;
+      padding: 2rem;
+      text-align: center;
+      border-radius: 5px;
+      background: #f9f9f9;
+    }
+
+    .photo-preview {
+      max-width: 200px;
+      max-height: 200px;
+      margin: 1rem auto;
+      display: none;
+      border-radius: 10px;
+    }
+
+    .photo-preview.active {
+      display: block;
+    }
+
+    .btn {
+      padding: 0.8rem 2rem;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #a78bfa 0%, #ec4899 100%);
+      color: white;
+    }
+
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+      margin-left: 1rem;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .button-group {
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid #eee;
+    }
+
+    .info-text {
+      font-size: 0.9rem;
+      color: #666;
+      margin-top: 0.5rem;
+    }
+
+    .upload-status {
+      margin-top: 1rem;
+      padding: 0.8rem;
+      border-radius: 5px;
+      display: none;
+    }
+
+    .upload-status.success {
+      background: #d4edda;
+      color: #155724;
+      display: block;
+    }
+
+    .upload-status.error {
+      background: #f8d7da;
+      color: #721c24;
+      display: block;
+    }
+
+    @media (max-width: 768px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1 th:text="${cv.id != null ? 'Edit CV' : 'Create New CV'}">Create New CV</h1>
+
+  <form th:action="@{/admin/cv/save}" th:object="${cv}" method="post">
+    <input type="hidden" th:field="*{id}" />
+    <input type="hidden" th:field="*{profilePhotoUrl}" id="hiddenPhotoUrl" />
+
+    <div class="form-group">
+      <label>Profile Photo</label>
+      <div class="photo-upload">
+        <img id="photoPreview" class="photo-preview" th:src="${cv.profilePhotoUrl}" alt="Profile Preview" />
+        <input type="file" id="photoInput" accept="image/*" style="display: none;" />
+        <button type="button" class="btn btn-primary" id="choosePhotoBtn">
+          Choose Photo
+        </button>
+        <p class="info-text">Recommended: Square image, at least 500x500px</p>
+        <div id="uploadStatus" class="upload-status"></div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Full Name *</label>
+        <input type="text" th:field="*{fullName}" required />
+      </div>
+      <div class="form-group">
+        <label>Professional Title</label>
+        <input type="text" th:field="*{title}" placeholder="e.g., Full Stack Developer" />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" th:field="*{email}" />
+      </div>
+      <div class="form-group">
+        <label>Phone</label>
+        <input type="tel" th:field="*{phone}" />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Location</label>
+      <input type="text" th:field="*{location}" placeholder="e.g., Colombo, Sri Lanka" />
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>LinkedIn URL</label>
+        <input type="text" th:field="*{linkedinUrl}" />
+      </div>
+      <div class="form-group">
+        <label>GitHub URL</label>
+        <input type="text" th:field="*{githubUrl}" />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Website URL</label>
+      <input type="text" th:field="*{websiteUrl}" />
+    </div>
+
+    <div class="form-group">
+      <label>Professional Summary</label>
+      <textarea th:field="*{summary}" placeholder="Brief introduction about yourself..."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>Skills</label>
+      <textarea th:field="*{skills}" placeholder="e.g., Java, Spring Boot, React, SQL Server..."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>Work Experience</label>
+      <textarea th:field="*{experience}" placeholder="Your work experience details..."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>Education</label>
+      <textarea th:field="*{education}" placeholder="Your educational background..."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>Certifications</label>
+      <textarea th:field="*{certifications}" placeholder="Professional certifications..."></textarea>
+    </div>
+
+    <div class="button-group">
+      <button type="submit" class="btn btn-primary">Save CV</button>
+      <a href="/admin/cv" class="btn btn-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    console.log('CV Form loaded');
+
+    const photoInput = document.getElementById('photoInput');
+    const photoPreview = document.getElementById('photoPreview');
+    const hiddenPhotoUrl = document.getElementById('hiddenPhotoUrl');
+    const uploadStatus = document.getElementById('uploadStatus');
+    const choosePhotoBtn = document.getElementById('choosePhotoBtn');
+
+    if (photoPreview.src && photoPreview.src !== window.location.href) {
+      photoPreview.classList.add('active');
+    }
+
+    choosePhotoBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      photoInput.click();
+    });
+
+    photoInput.addEventListener('change', async function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      console.log('File selected:', file.name);
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        photoPreview.src = e.target.result;
+        photoPreview.classList.add('active');
+      };
+      reader.readAsDataURL(file);
+
+      uploadStatus.textContent = 'Uploading...';
+      uploadStatus.className = 'upload-status';
+      uploadStatus.style.display = 'block';
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        const response = await fetch('/admin/upload-profile-photo', {
+          method: 'POST',
+          body: formData
+        });
+
+        const result = await response.text();
+        console.log('Upload result:', result);
+
+        if (result.startsWith('error:')) {
+          uploadStatus.textContent = result.replace('error:', '');
+          uploadStatus.className = 'upload-status error';
+        } else {
+          hiddenPhotoUrl.value = result;
+          uploadStatus.textContent = 'SUCCESS! Photo uploaded. Now click Save CV below.';
+          uploadStatus.className = 'upload-status success';
+        }
+      } catch (error) {
+        uploadStatus.textContent = 'Upload failed: ' + error.message;
+        uploadStatus.className = 'upload-status error';
+      }
+    });
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,188 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::section}, 'Contact')}">
+
+<section>
+    <div class="container" style="max-width: 800px;">
+        <!-- Page Header -->
+        <div class="text-center mb-5">
+            <h1 class="h2 fw-bold mb-3">
+                <i class="bi bi-envelope-fill text-primary me-2"></i>Get In Touch
+            </h1>
+            <p class="text-muted lead">
+                Have a project in mind or just want to say hello? Drop me a message!
+            </p>
+        </div>
+
+        <!-- Success Message -->
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-check-circle-fill fs-4 me-3"></i>
+                <div>
+                    <strong>Success!</strong>
+                    <p class="mb-0" th:text="${success}">Thanks! Your message has been sent.</p>
+                </div>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <!-- Error Message -->
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-exclamation-triangle-fill fs-4 me-3"></i>
+                <div>
+                    <strong>Error!</strong>
+                    <p class="mb-0" th:text="${error}">Something went wrong. Please try again.</p>
+                </div>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <!-- Contact Form -->
+        <div class="card rounded-4 shadow border-0 mb-4">
+            <div class="card-body p-4 p-md-5">
+                <form method="post" th:action="@{/contact}" th:object="${contactMessage}">
+                    <div class="row g-4">
+                        <!-- Name Field -->
+                        <div class="col-md-6">
+                            <label for="name" class="form-label fw-semibold">
+                                <i class="bi bi-person-fill text-primary me-2"></i>Your Name *
+                            </label>
+                            <input type="text"
+                                   id="name"
+                                   th:field="*{name}"
+                                   class="form-control form-control-lg"
+                                   placeholder="John Doe"
+                                   required
+                                   maxlength="120">
+                        </div>
+
+                        <!-- Email Field -->
+                        <div class="col-md-6">
+                            <label for="email" class="form-label fw-semibold">
+                                <i class="bi bi-envelope-fill text-primary me-2"></i>Email Address *
+                            </label>
+                            <input type="email"
+                                   id="email"
+                                   th:field="*{email}"
+                                   class="form-control form-control-lg"
+                                   placeholder="john@example.com"
+                                   required
+                                   maxlength="180">
+                        </div>
+
+                        <!-- Subject Field -->
+                        <div class="col-12">
+                            <label for="subject" class="form-label fw-semibold">
+                                <i class="bi bi-chat-left-text-fill text-primary me-2"></i>Subject *
+                            </label>
+                            <input type="text"
+                                   id="subject"
+                                   th:field="*{subject}"
+                                   class="form-control form-control-lg"
+                                   placeholder="Project Inquiry / Collaboration / etc."
+                                   required
+                                   maxlength="200">
+                        </div>
+
+                        <!-- Message Field -->
+                        <div class="col-12">
+                            <label for="message" class="form-label fw-semibold">
+                                <i class="bi bi-pencil-fill text-primary me-2"></i>Your Message *
+                            </label>
+                            <textarea id="message"
+                                      th:field="*{message}"
+                                      class="form-control"
+                                      rows="6"
+                                      placeholder="Tell me about your project, ideas, or just say hello..."
+                                      required
+                                      style="resize: vertical; min-height: 150px;"></textarea>
+                            <div class="form-text">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Messages are saved and I'll respond as soon as possible!
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="mt-4 d-grid gap-2 d-md-flex justify-content-md-between align-items-center">
+                        <div class="text-muted small">
+                            <i class="bi bi-shield-check me-1"></i>
+                            All fields marked with * are required
+                        </div>
+                        <button class="btn btn-primary btn-lg px-5" type="submit">
+                            <i class="bi bi-send-fill me-2"></i>Send Message
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Additional Contact Info (Optional) -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100 text-center p-3">
+                    <div class="card-body">
+                        <i class="bi bi-envelope-fill text-primary fs-2 mb-3"></i>
+                        <h6 class="fw-semibold mb-2">Email</h6>
+                        <p class="text-muted small mb-0">kanishkaf18@gmail.com</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100 text-center p-3">
+                    <div class="card-body">
+                        <i class="bi bi-telephone-fill text-primary fs-2 mb-3"></i>
+                        <h6 class="fw-semibold mb-2">Phone</h6>
+                        <p class="text-muted small mb-0">+94 70 460 6206</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100 text-center p-3">
+                    <div class="card-body">
+                        <i class="bi bi-geo-alt-fill text-primary fs-2 mb-3"></i>
+                        <h6 class="fw-semibold mb-2">Location</h6>
+                        <p class="text-muted small mb-0">Colombo, Sri Lanka</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Back Button -->
+        <div class="text-center">
+            <a th:href="@{/}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-2"></i>Back to Home
+            </a>
+        </div>
+    </div>
+
+    <!-- Custom Styles -->
+    <style>
+        .form-control:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+        }
+
+        .card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+        .alert {
+            border-left: 4px solid;
+        }
+
+        .alert-success {
+            border-left-color: #198754;
+        }
+
+        .alert-danger {
+            border-left-color: #dc3545;
+        }
+    </style>
+</section>
+</html>

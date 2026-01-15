@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Direct Photo Upload</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .box {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .step {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #2196F3;
+        }
+        input[type="file"] {
+            display: block;
+            margin: 20px 0;
+            padding: 10px;
+            width: 100%;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            font-weight: bold;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .result {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            display: none;
+            word-break: break-all;
+        }
+        .result.show {
+            display: block;
+        }
+        .sql-box {
+            background: #2d2d2d;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin-top: 10px;
+            overflow-x: auto;
+        }
+        .preview {
+            max-width: 200px;
+            max-height: 200px;
+            display: none;
+            margin: 20px auto;
+            border-radius: 10px;
+        }
+        .preview.show {
+            display: block;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            display: none;
+        }
+        .success.show {
+            display: block;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            display: none;
+        }
+        .error.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+<div class="box">
+    <h1>🔧 Direct Photo Upload</h1>
+
+    <div class="step">
+        <strong>STEP 1:</strong> Choose your photo
+    </div>
+    <input type="file" id="photoFile" accept="image/*">
+    <img id="preview" class="preview" alt="Preview">
+
+    <div class="step">
+        <strong>STEP 2:</strong> Click Upload
+    </div>
+    <button onclick="uploadPhoto()">📤 Upload Photo</button>
+
+    <div id="success" class="success"></div>
+    <div id="error" class="error"></div>
+
+    <div id="result" class="result">
+        <h3>✅ Photo Uploaded Successfully!</h3>
+        <p><strong>Photo URL:</strong> <span id="photoUrl"></span></p>
+
+        <div class="step">
+            <strong>STEP 3:</strong> Copy and run this SQL in SQL Server Management Studio:
+        </div>
+        <div class="sql-box" id="sqlCode"></div>
+
+        <div class="step" style="margin-top: 20px;">
+            <strong>STEP 4:</strong> Refresh your CV list page:
+            <br><a href="/admin/cv" target="_blank">http://localhost:8080/admin/cv</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Preview image
+    document.getElementById('photoFile').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const preview = document.getElementById('preview');
+                preview.src = e.target.result;
+                preview.classList.add('show');
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    async function uploadPhoto() {
+        const fileInput = document.getElementById('photoFile');
+        const file = fileInput.files[0];
+
+        if (!file) {
+            alert('Please select a photo first!');
+            return;
+        }
+
+        const success = document.getElementById('success');
+        const error = document.getElementById('error');
+        const result = document.getElementById('result');
+
+        success.classList.remove('show');
+        error.classList.remove('show');
+        result.classList.remove('show');
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            console.log('Uploading file:', file.name);
+
+            const response = await fetch('/admin/upload-profile-photo', {
+                method: 'POST',
+                body: formData
+            });
+
+            const resultText = await response.text();
+            console.log('Server response:', resultText);
+
+            if (resultText.startsWith('error:')) {
+                error.textContent = '❌ Upload failed: ' + resultText.replace('error:', '');
+                error.classList.add('show');
+            } else {
+                // Success!
+                document.getElementById('photoUrl').textContent = resultText;
+
+                // Generate SQL
+                const sql = `-- Copy and run this in SQL Server Management Studio
+UPDATE cv_entries
+SET profile_photo_url = '${resultText}'
+WHERE is_active = 1;
+
+-- Or update a specific CV by ID:
+-- UPDATE cv_entries
+-- SET profile_photo_url = '${resultText}'
+-- WHERE id = 1;`;
+
+                document.getElementById('sqlCode').textContent = sql;
+                result.classList.add('show');
+
+                success.textContent = '✅ Photo uploaded successfully! Now run the SQL below.';
+                success.classList.add('show');
+            }
+        } catch (err) {
+            console.error('Error:', err);
+            error.textContent = '❌ Upload failed: ' + err.message;
+            error.classList.add('show');
+        }
+    }
+</script>
+</body>
+</html>

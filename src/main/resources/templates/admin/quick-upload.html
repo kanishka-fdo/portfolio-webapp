@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Quick Photo Upload</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .upload-box {
+      background: white;
+      padding: 50px;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      text-align: center;
+      max-width: 500px;
+      width: 100%;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 30px;
+      font-size: 2rem;
+    }
+
+    .drop-zone {
+      border: 3px dashed #a78bfa;
+      border-radius: 20px;
+      padding: 60px 40px;
+      cursor: pointer;
+      transition: all 0.3s;
+      background: #f9f9f9;
+      margin-bottom: 20px;
+    }
+
+    .drop-zone:hover {
+      border-color: #ec4899;
+      background: #fff;
+    }
+
+    .drop-zone.dragover {
+      background: #f0e7ff;
+      border-color: #ec4899;
+    }
+
+    .drop-icon {
+      font-size: 4rem;
+      margin-bottom: 20px;
+    }
+
+    .drop-text {
+      font-size: 1.2rem;
+      color: #666;
+      margin-bottom: 10px;
+    }
+
+    .drop-subtext {
+      font-size: 0.9rem;
+      color: #999;
+    }
+
+    .preview-box {
+      display: none;
+      margin-bottom: 20px;
+    }
+
+    .preview-box.show {
+      display: block;
+    }
+
+    .preview-img {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 5px solid #a78bfa;
+      margin-bottom: 20px;
+    }
+
+    .status {
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      display: none;
+      font-weight: 600;
+    }
+
+    .status.show {
+      display: block;
+    }
+
+    .status.success {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .status.error {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .status.info {
+      background: #d1ecf1;
+      color: #0c5460;
+    }
+
+    .btn {
+      padding: 15px 40px;
+      background: linear-gradient(135deg, #a78bfa 0%, #ec4899 100%);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin: 5px;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(167, 139, 250, 0.4);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: #6c757d;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .back-link {
+      margin-top: 20px;
+    }
+
+    .back-link a {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+<div class="upload-box">
+  <h1>📸 Upload Profile Photo</h1>
+
+  <div id="dropZone" class="drop-zone">
+    <div class="drop-icon">📁</div>
+    <div class="drop-text">Drag & Drop your photo here</div>
+    <div class="drop-subtext">or click to browse</div>
+  </div>
+
+  <div id="previewBox" class="preview-box">
+    <img id="previewImg" class="preview-img" alt="Preview">
+    <div id="fileName" style="color: #666; margin-bottom: 15px;"></div>
+  </div>
+
+  <div id="status" class="status"></div>
+
+  <div id="buttons" style="display: none;">
+    <button class="btn" id="uploadBtn">Upload Now</button>
+    <button class="btn btn-secondary" onclick="reset()">Choose Another</button>
+  </div>
+
+  <input type="file" id="fileInput" accept="image/*">
+
+  <div class="back-link">
+    <a href="/admin/cv">← Back to CV Management</a>
+  </div>
+</div>
+
+<script>
+  const dropZone = document.getElementById('dropZone');
+  const fileInput = document.getElementById('fileInput');
+  const previewBox = document.getElementById('previewBox');
+  const previewImg = document.getElementById('previewImg');
+  const fileName = document.getElementById('fileName');
+  const status = document.getElementById('status');
+  const buttons = document.getElementById('buttons');
+  const uploadBtn = document.getElementById('uploadBtn');
+  let selectedFile = null;
+
+  // Click to browse
+  dropZone.addEventListener('click', () => fileInput.click());
+
+  // Drag and drop
+  dropZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropZone.classList.add('dragover');
+  });
+
+  dropZone.addEventListener('dragleave', () => {
+    dropZone.classList.remove('dragover');
+  });
+
+  dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) {
+      handleFile(file);
+    }
+  });
+
+  // File input change
+  fileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) handleFile(file);
+  });
+
+  function handleFile(file) {
+    selectedFile = file;
+
+    // Show preview
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      previewImg.src = e.target.result;
+      previewBox.classList.add('show');
+      dropZone.style.display = 'none';
+      buttons.style.display = 'block';
+      fileName.textContent = file.name + ' (' + (file.size / 1024 / 1024).toFixed(2) + ' MB)';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function reset() {
+    selectedFile = null;
+    previewBox.classList.remove('show');
+    dropZone.style.display = 'block';
+    buttons.style.display = 'none';
+    status.classList.remove('show');
+    fileInput.value = '';
+  }
+
+  uploadBtn.addEventListener('click', async () => {
+    if (!selectedFile) return;
+
+    uploadBtn.disabled = true;
+    uploadBtn.textContent = 'Uploading...';
+    status.textContent = '⏳ Uploading your photo...';
+    status.className = 'status info show';
+
+    // Step 1: Upload file
+    const formData = new FormData();
+    formData.append('file', selectedFile);
+
+    try {
+      const uploadResponse = await fetch('/admin/upload-profile-photo', {
+        method: 'POST',
+        body: formData
+      });
+
+      const uploadResult = await uploadResponse.text();
+      console.log('Upload result:', uploadResult);
+
+      if (uploadResult.startsWith('error:')) {
+        status.textContent = '❌ ' + uploadResult.replace('error:', '');
+        status.className = 'status error show';
+        uploadBtn.disabled = false;
+        uploadBtn.textContent = 'Upload Now';
+        return;
+      }
+
+      // Step 2: Update CV
+      status.textContent = '🔄 Saving photo to your CV...';
+
+      const updateFormData = new FormData();
+      updateFormData.append('photoUrl', uploadResult);
+
+      const updateResponse = await fetch('/admin/update-cv-photo', {
+        method: 'POST',
+        body: updateFormData
+      });
+
+      const updateResult = await updateResponse.text();
+      console.log('Update result:', updateResult);
+
+      if (updateResult.startsWith('success:')) {
+        status.textContent = '✅ SUCCESS! Your photo has been saved!';
+        status.className = 'status success show';
+
+        setTimeout(() => {
+          if (confirm('Photo saved! Go to CV list to see it?')) {
+            window.location.href = '/admin/cv';
+          }
+        }, 1500);
+      } else {
+        status.textContent = '⚠️ Photo uploaded but not saved to CV. Please refresh the page.';
+        status.className = 'status error show';
+      }
+
+    } catch (error) {
+      console.error('Error:', error);
+      status.textContent = '❌ Upload failed: ' + error.message;
+      status.className = 'status error show';
+    } finally {
+      uploadBtn.disabled = false;
+      uploadBtn.textContent = 'Upload Now';
+    }
+  });
+</script>
+</body>
+</html>
