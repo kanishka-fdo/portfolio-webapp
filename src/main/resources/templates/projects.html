@@ -1,164 +1,250 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layout :: layout(~{::section}, 'Projects')}">
+      th:replace="~{layout :: layout(~{::section}, 'Projects — Kanishka Fernando')}">
 
 <section>
-    <div class="text-center mb-5 animate-fade-in">
-        <h1 class="display-5 fw-bold mb-3">
-            <i class="bi bi-folder-fill text-primary me-2"></i>My Projects
-        </h1>
-        <p class="lead text-muted">
-            Explore my portfolio of <span class="fw-bold text-primary" th:text="${projects != null ? projects.size() : 0}">0</span> projects
+    <!-- Section Header -->
+    <div class="text-center mb-5" data-reveal>
+        <div class="section-meta-tag mb-2">01 / SHOWCASE CATALOG</div>
+        <h1 class="display-5 fw-bold mb-3">All Engineering Projects</h1>
+        <p class="text-muted mx-auto" style="max-width: 600px;">
+            A curated portfolio of full-stack web applications, microservices, database systems, and software engineering coursework built by Kanishka Fernando.
         </p>
     </div>
 
-    <!-- All Projects -->
-    <div th:if="${projects != null and !#lists.isEmpty(projects)}" class="animate-fade-in">
-        <div class="row g-4 mb-5">
-            <div class="col-md-6 col-lg-4" th:each="p : ${projects}">
-                <div class="card h-100 border-0 shadow-sm hover-card">
-                    <!-- Project Image -->
-                    <div class="position-relative overflow-hidden project-image-wrapper">
-                        <img th:if="${p.imageUrl != null and !#strings.isEmpty(p.imageUrl)}"
-                             th:src="@{${p.imageUrl}}"
-                             class="w-100 h-100 project-image"
-                             th:alt="${p.title}"
-                             style="object-fit: cover;">
-
-                        <div th:unless="${p.imageUrl != null and !#strings.isEmpty(p.imageUrl)}"
-                             class="project-placeholder">
-                            <i class="bi bi-image" style="font-size: 3rem; opacity: 0.5;"></i>
+    <!-- Search & Quick Filters -->
+    <div class="row justify-content-center mb-5" data-reveal>
+        <div class="col-lg-10">
+            <div class="p-3 rounded-4" style="background: var(--bg-card); border: 1px solid var(--line); backdrop-filter: blur(16px);">
+                <div class="row g-3 align-items-center">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text border-0 bg-transparent text-white">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" id="projectSearch" class="form-control border-0 bg-transparent text-white" placeholder="Search by name, technology (e.g. Spring, React, SQL)..." style="box-shadow: none;">
                         </div>
-
-                        <!-- Featured Badge -->
-                        <span th:if="${p.featured}"
-                              class="badge bg-warning text-dark position-absolute top-0 end-0 m-3">
-                            <i class="bi bi-star-fill me-1"></i>Featured
-                        </span>
                     </div>
-
-                    <div class="card-body d-flex flex-column">
-                        <!-- Title -->
-                        <h3 class="h5 fw-bold mb-2" th:text="${p.title}">Project Title</h3>
-
-                        <!-- Subtitle -->
-                        <p class="text-muted small mb-2"
-                           th:if="${p.subtitle != null and !#strings.isEmpty(p.subtitle)}"
-                           th:text="${p.subtitle}">
-                            Subtitle
-                        </p>
-
-                        <!-- Short Description -->
-                        <p class="flex-grow-1 text-muted mb-3"
-                           th:text="${p.shortDescription}">
-                            Project description
-                        </p>
-
-                        <!-- Tech Stack -->
-                        <div class="mb-3">
-                            <div class="d-flex flex-wrap gap-2">
-                                <span th:each="tech : ${#strings.arraySplit(p.techStack, ',')}"
-                                      class="badge bg-light text-dark border">
-                                    <span th:text="${#strings.trim(tech)}">Tech</span>
-                                </span>
-                            </div>
-                        </div>
-
-                        <!-- Action Buttons -->
-                        <div class="d-flex gap-2">
-                            <a class="btn btn-primary btn-sm flex-grow-1"
-                               th:href="@{/projects/{id}(id=${p.id})}">
-                                <i class="bi bi-eye me-1"></i>View Details
-                            </a>
-                            <a th:if="${p.githubUrl != null and !#strings.isEmpty(p.githubUrl)}"
-                               th:href="${p.githubUrl}"
-                               target="_blank"
-                               class="btn btn-outline-dark btn-sm"
-                               title="GitHub">
-                                <i class="bi bi-github"></i>
-                            </a>
-                            <a th:if="${p.liveUrl != null and !#strings.isEmpty(p.liveUrl)}"
-                               th:href="${p.liveUrl}"
-                               target="_blank"
-                               class="btn btn-outline-primary btn-sm"
-                               title="Live Demo">
-                                <i class="bi bi-box-arrow-up-right"></i>
-                            </a>
-                        </div>
+                    <div class="col-md-6 d-flex gap-2 justify-content-md-end flex-wrap">
+                        <button type="button" class="btn-pop-primary py-1 px-3 filter-btn active" data-filter="all" onclick="applyProjectFilter('all', this)" style="font-size: 0.8rem;">All</button>
+                        <button type="button" class="btn-pop-secondary py-1 px-3 filter-btn" data-filter="featured" onclick="applyProjectFilter('featured', this)" style="font-size: 0.8rem;">★ Featured</button>
+                        <button type="button" class="btn-pop-secondary py-1 px-3 filter-btn" data-filter="spring" onclick="applyProjectFilter('spring', this)" style="font-size: 0.8rem;">Spring Boot</button>
+                        <button type="button" class="btn-pop-secondary py-1 px-3 filter-btn" data-filter="react" onclick="applyProjectFilter('react', this)" style="font-size: 0.8rem;">React</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- No Projects Message -->
-    <div th:unless="${projects != null and !#lists.isEmpty(projects)}"
-         class="text-center py-5">
-        <div class="card border-0 shadow-sm p-5">
-            <i class="bi bi-folder-x text-muted" style="font-size: 5rem; opacity: 0.3;"></i>
-            <h3 class="h4 mt-4 mb-2">No Projects Yet</h3>
-            <p class="text-muted mb-0">Projects will appear here once they are added</p>
+    <!-- Project Cards Grid -->
+    <div class="row g-4 mb-5" id="projectsGrid" th:if="${projects != null and !#lists.isEmpty(projects)}">
+        <div class="col-md-6 col-lg-4 project-col-item" 
+             th:each="p : ${projects}"
+             th:attr="data-title=${#strings.toLowerCase(p.title)}, data-tech=${#strings.toLowerCase(p.techStack != null ? p.techStack : '')}, data-featured=${p.featured}">
+            
+            <div class="pop-card">
+                <div class="pop-card-img-wrap">
+                    <img th:if="${p.imageUrl != null and !#strings.isEmpty(p.imageUrl)}"
+                         th:src="@{${p.imageUrl}}"
+                         th:alt="${p.title}"
+                         class="pop-card-img">
+                    <div th:unless="${p.imageUrl != null and !#strings.isEmpty(p.imageUrl)}" class="w-100 h-100 d-flex align-items-center justify-content-center text-muted" style="background:#131318;">
+                        <i class="bi bi-code-square fs-1 text-white opacity-50"></i>
+                    </div>
+                    <span th:if="${p.featured}" class="pop-badge-featured">★ Featured</span>
+                </div>
+
+                <div class="pop-card-body">
+                    <h3 class="pop-card-title" th:text="${p.title}">Project Title</h3>
+                    
+                    <p class="pop-card-desc" th:text="${p.shortDescription}">
+                        Project short description.
+                    </p>
+
+                    <div class="d-flex flex-wrap gap-2 mb-4" th:if="${p.techStack != null}">
+                        <span th:each="t : ${#strings.arraySplit(p.techStack, ',')}" class="tech-tag-chip" th:text="${#strings.trim(t)}">Spring</span>
+                    </div>
+
+                    <div class="d-flex gap-2 align-items-center mt-auto">
+                        <button type="button" 
+                                class="btn-pop-primary flex-grow-1 justify-content-center py-2 px-3 text-center" 
+                                style="font-size: 0.88rem;"
+                                th:attr="data-title=${p.title}, data-desc=${p.description != null ? p.description : p.shortDescription}, data-tech=${p.techStack}, data-img=${p.imageUrl}, data-live=${p.liveUrl}, data-github=${p.githubUrl}, data-id=${p.id}"
+                                onclick="openProjectsQuickView(this)">
+                            <i class="bi bi-eye me-1"></i>Quick View
+                        </button>
+                        <a th:href="@{/projects/{id}(id=${p.id})}" 
+                           class="btn-pop-secondary px-3 py-2" 
+                           title="Full Details">
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+                        <a th:if="${p.githubUrl != null and !#strings.isEmpty(p.githubUrl)}"
+                           th:href="${p.githubUrl}"
+                           target="_blank"
+                           class="btn-pop-secondary px-3 py-2"
+                           title="GitHub">
+                            <i class="bi bi-github fs-6"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Back to Home Button -->
-    <div class="text-center mt-4">
-        <a th:href="@{/}" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left me-2"></i>Back to Home
-        </a>
+    <!-- Empty State -->
+    <div id="noMatchAlert" class="text-center py-5 d-none">
+        <div class="p-5 rounded-4 mx-auto" style="max-width: 480px; background: var(--bg-card); border: 1px dashed var(--line-strong);">
+            <i class="bi bi-search fs-1 text-white mb-3 d-block"></i>
+            <h4 class="text-white">No Matching Projects Found</h4>
+            <p class="text-muted">Try clearing the search query or reset the filter.</p>
+        </div>
     </div>
+
+    <!-- Quick Project View Modal Popup ("poppes") -->
+    <div class="modal fade" id="projectsQuickViewModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content pop-modal">
+                <div class="modal-header pop-modal-header d-flex justify-content-between align-items-center">
+                    <h5 class="modal-title fw-bold text-white d-flex align-items-center gap-2" id="pqTitle">
+                        <i class="bi bi-code-slash text-white"></i>
+                        <span>Project Preview</span>
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div id="pqImgWrap" class="mb-4 rounded-3 overflow-hidden border border-secondary" style="max-height: 320px; background: #0c0c10;">
+                        <img id="pqImg" src="" alt="Project Image" class="w-100" style="object-fit: cover; max-height: 320px;">
+                    </div>
+                    <div class="mb-3">
+                        <h6 class="text-white fw-bold text-uppercase small">Overview</h6>
+                        <p id="pqDesc" class="text-muted" style="line-height: 1.7; white-space: pre-line;"></p>
+                    </div>
+                    <div class="mb-4">
+                        <h6 class="text-white fw-bold text-uppercase small">Tech Stack</h6>
+                        <div id="pqTech" class="d-flex flex-wrap gap-2"></div>
+                    </div>
+                </div>
+                <div class="modal-footer pop-modal-footer d-flex justify-content-between">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Close</button>
+                    <div class="d-flex gap-2">
+                        <a id="pqGithubBtn" href="#" target="_blank" class="btn btn-outline-light rounded-pill px-4">
+                            <i class="bi bi-github me-1"></i>GitHub
+                        </a>
+                        <a id="pqLiveBtn" href="#" target="_blank" class="btn-pop-primary py-2 px-4" style="font-size: 0.9rem;">
+                            <i class="bi bi-box-arrow-up-right me-1"></i>Live Preview
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const searchInput = document.getElementById('projectSearch');
+        let currentType = 'all';
+
+        function applyProjectFilter(type, btn) {
+            currentType = type;
+            document.querySelectorAll('.filter-btn').forEach(b => {
+                b.classList.remove('active', 'btn-pop-primary');
+                b.classList.add('btn-pop-secondary');
+            });
+            btn.classList.add('active', 'btn-pop-primary');
+            btn.classList.remove('btn-pop-secondary');
+            filterCards();
+        }
+
+        function filterCards() {
+            const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+            const items = document.querySelectorAll('.project-col-item');
+            let visible = 0;
+
+            items.forEach(item => {
+                const title = item.getAttribute('data-title') || '';
+                const tech = item.getAttribute('data-tech') || '';
+                const featured = item.getAttribute('data-featured') === 'true';
+
+                const matchesQuery = query === '' || title.includes(query) || tech.includes(query);
+                
+                let matchesFilter = false;
+                if (currentType === 'all') {
+                    matchesFilter = true;
+                } else if (currentType === 'featured') {
+                    matchesFilter = featured;
+                } else if (currentType === 'spring') {
+                    matchesFilter = tech.includes('spring') || tech.includes('java');
+                } else if (currentType === 'react') {
+                    matchesFilter = tech.includes('react') || tech.includes('javascript') || tech.includes('frontend');
+                }
+
+                if (matchesQuery && matchesFilter) {
+                    item.style.display = 'block';
+                    visible++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            const noMatch = document.getElementById('noMatchAlert');
+            if (noMatch) {
+                noMatch.classList.toggle('d-none', visible > 0);
+            }
+        }
+
+        if (searchInput) {
+            searchInput.addEventListener('input', filterCards);
+        }
+
+        function openProjectsQuickView(btn) {
+            const title = btn.getAttribute('data-title');
+            const desc = btn.getAttribute('data-desc');
+            const tech = btn.getAttribute('data-tech');
+            const img = btn.getAttribute('data-img');
+            const live = btn.getAttribute('data-live');
+            const github = btn.getAttribute('data-github');
+
+            document.getElementById('pqTitle').innerText = title;
+            document.getElementById('pqDesc').innerText = desc || "No description available.";
+
+            const imgWrap = document.getElementById('pqImgWrap');
+            const imgEl = document.getElementById('pqImg');
+            if (img && img.trim() !== '') {
+                imgEl.src = img;
+                imgWrap.style.display = 'block';
+            } else {
+                imgWrap.style.display = 'none';
+            }
+
+            const techContainer = document.getElementById('pqTech');
+            techContainer.innerHTML = '';
+            if (tech) {
+                tech.split(',').forEach(item => {
+                    const span = document.createElement('span');
+                    span.className = 'tech-tag-chip';
+                    span.innerText = item.trim();
+                    techContainer.appendChild(span);
+                });
+            }
+
+            const githubBtn = document.getElementById('pqGithubBtn');
+            if (github && github.trim() !== '') {
+                githubBtn.href = github;
+                githubBtn.style.display = 'inline-flex';
+            } else {
+                githubBtn.style.display = 'none';
+            }
+
+            const liveBtn = document.getElementById('pqLiveBtn');
+            if (live && live.trim() !== '') {
+                liveBtn.href = live;
+                liveBtn.style.display = 'inline-flex';
+            } else {
+                liveBtn.style.display = 'none';
+            }
+
+            const modal = new bootstrap.Modal(document.getElementById('projectsQuickViewModal'));
+            modal.show();
+        }
+    </script>
 </section>
-
-<style>
-    .animate-fade-in {
-        animation: fadeIn 0.6s ease-in;
-    }
-
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .hover-card {
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .hover-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15) !important;
-    }
-
-    .project-image-wrapper {
-        height: 220px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    }
-
-    .project-image {
-        transition: transform 0.3s ease;
-    }
-
-    .hover-card:hover .project-image {
-        transform: scale(1.1);
-    }
-
-    .project-placeholder {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-    }
-
-    .badge.border {
-        font-weight: 500;
-        padding: 0.35em 0.65em;
-    }
-</style>
 </html>

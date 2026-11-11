@@ -58,6 +58,22 @@ public class AdminController {
         return "admin/dashboard";
     }
 
+    // All Projects View
+    @GetMapping("/all-projects")
+    public String allProjects(Model model) {
+        model.addAttribute("projects", projectService.findAll());
+        model.addAttribute("viewType", "all");
+        return "admin/projects-view";
+    }
+
+    // Featured Projects View
+    @GetMapping("/featured-projects")
+    public String featuredProjects(Model model) {
+        model.addAttribute("projects", projectService.findFeatured());
+        model.addAttribute("viewType", "featured");
+        return "admin/projects-view";
+    }
+
     @GetMapping("/projects/new")
     public String newProject(Model model) {
         model.addAttribute("project", new Project());
@@ -136,6 +152,12 @@ public class AdminController {
     @GetMapping("/profile-photo")
     public String profilePhoto() {
         return "admin/profile-photo";
+    }
+
+    // Project Image Upload Page
+    @GetMapping("/project-image")
+    public String projectImage() {
+        return "admin/project-image-upload";
     }
 
     // Test Upload Page

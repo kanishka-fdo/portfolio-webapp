@@ -17,7 +17,6 @@ import java.util.UUID;
 @RequestMapping("/admin")
 public class FileUploadController {
 
-    // Changed to match the resource handler configuration
     private final String UPLOAD_DIR = System.getProperty("user.dir") + "/uploads/";
 
     @PostConstruct
@@ -40,7 +39,17 @@ public class FileUploadController {
     @PostMapping("/upload-profile-photo")
     @ResponseBody
     public String uploadProfilePhoto(@RequestParam("file") MultipartFile file) {
-        System.out.println("\n==================== PHOTO UPLOAD STARTED ====================");
+        return handleFileUpload(file, "profile");
+    }
+
+    @PostMapping("/upload-project-image")
+    @ResponseBody
+    public String uploadProjectImage(@RequestParam("file") MultipartFile file) {
+        return handleFileUpload(file, "project");
+    }
+
+    private String handleFileUpload(MultipartFile file, String type) {
+        System.out.println("\n==================== " + type.toUpperCase() + " UPLOAD STARTED ====================");
         System.out.println("File received: " + (file != null ? file.getOriginalFilename() : "NULL"));
 
         try {
@@ -61,7 +70,7 @@ public class FileUploadController {
             }
 
             String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-            String newFilename = "profile_" + System.currentTimeMillis() + "_" +
+            String newFilename = type + "_" + System.currentTimeMillis() + "_" +
                     UUID.randomUUID().toString().substring(0, 8) + extension;
 
             System.out.println("New filename: " + newFilename);

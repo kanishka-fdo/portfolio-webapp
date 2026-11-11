@@ -40,7 +40,7 @@ public class SecurityConfig {
                         .permitAll()
                 )
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/admin/upload-profile-photo")
+                        .ignoringRequestMatchers("/admin/upload-profile-photo", "/admin/upload-project-image")
                 )
                 .httpBasic(Customizer.withDefaults());
 

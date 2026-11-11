@@ -249,7 +249,7 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    console.log('CV Form loaded');
+    console.log('CV Form script loaded');
 
     const photoInput = document.getElementById('photoInput');
     const photoPreview = document.getElementById('photoPreview');
@@ -257,55 +257,75 @@
     const uploadStatus = document.getElementById('uploadStatus');
     const choosePhotoBtn = document.getElementById('choosePhotoBtn');
 
+    // Check if existing photo
     if (photoPreview.src && photoPreview.src !== window.location.href) {
       photoPreview.classList.add('active');
+      console.log('Existing photo found:', photoPreview.src);
     }
 
     choosePhotoBtn.addEventListener('click', function(e) {
       e.preventDefault();
+      console.log('Choose photo clicked');
       photoInput.click();
     });
 
     photoInput.addEventListener('change', async function(e) {
       const file = e.target.files[0];
-      if (!file) return;
+      console.log('File selected:', file);
 
-      console.log('File selected:', file.name);
+      if (!file) {
+        console.log('No file selected');
+        return;
+      }
 
+      console.log('File name:', file.name);
+      console.log('File size:', file.size);
+      console.log('File type:', file.type);
+
+      // Show preview immediately
       const reader = new FileReader();
       reader.onload = function(e) {
         photoPreview.src = e.target.result;
         photoPreview.classList.add('active');
+        console.log('Preview loaded');
       };
       reader.readAsDataURL(file);
 
+      // Upload to server
       uploadStatus.textContent = 'Uploading...';
       uploadStatus.className = 'upload-status';
       uploadStatus.style.display = 'block';
+      console.log('Starting upload...');
 
       const formData = new FormData();
       formData.append('file', file);
 
       try {
+        console.log('Sending request to /admin/upload-profile-photo');
         const response = await fetch('/admin/upload-profile-photo', {
           method: 'POST',
           body: formData
         });
 
+        console.log('Response status:', response.status);
         const result = await response.text();
-        console.log('Upload result:', result);
+        console.log('Response result:', result);
 
         if (result.startsWith('error:')) {
           uploadStatus.textContent = result.replace('error:', '');
           uploadStatus.className = 'upload-status error';
+          console.error('Upload error:', result);
         } else {
           hiddenPhotoUrl.value = result;
-          uploadStatus.textContent = 'SUCCESS! Photo uploaded. Now click Save CV below.';
+          uploadStatus.textContent = 'âœ“ Photo uploaded successfully! Now click Save CV below.';
           uploadStatus.className = 'upload-status success';
+          console.log('Upload successful! URL:', result);
+          console.log('Hidden field value set to:', hiddenPhotoUrl.value);
         }
       } catch (error) {
         uploadStatus.textContent = 'Upload failed: ' + error.message;
         uploadStatus.className = 'upload-status error';
+        console.error('Upload exception:', error);
       }
     });
   });
