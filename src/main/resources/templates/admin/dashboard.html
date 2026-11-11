@@ -26,74 +26,86 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 
-    <!-- Statistics Grid -->
+    <!-- Statistics Grid - Now Clickable! -->
     <div class="row g-4 mb-5">
+        <!-- Total Projects - Clickable -->
         <div class="col-xl-3 col-md-6">
-            <div class="stat-card animate-fade-in" style="animation-delay: 0.1s">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                        <div class="stat-label">Total Projects</div>
-                        <div class="stat-number" th:text="${projects.size()}">0</div>
-                        <small class="text-muted">
-                            <i class="bi bi-graph-up"></i> Active portfolio items
-                        </small>
-                    </div>
-                    <div class="stat-icon" style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: white;">
-                        <i class="bi bi-folder-fill"></i>
+            <a th:href="@{/admin/all-projects}" class="text-decoration-none">
+                <div class="stat-card animate-fade-in clickable-card" style="animation-delay: 0.1s">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="stat-label">Total Projects</div>
+                            <div class="stat-number" th:text="${projects.size()}">0</div>
+                            <small class="text-muted">
+                                <i class="bi bi-graph-up"></i> Active portfolio items
+                            </small>
+                        </div>
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: white;">
+                            <i class="bi bi-folder-fill"></i>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
 
+        <!-- Featured Projects - Clickable -->
         <div class="col-xl-3 col-md-6">
-            <div class="stat-card animate-fade-in" style="animation-delay: 0.2s">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                        <div class="stat-label">Featured</div>
-                        <div class="stat-number" th:text="${featuredCount}">0</div>
-                        <small class="text-muted">
-                            <i class="bi bi-star-fill"></i> Highlighted projects
-                        </small>
-                    </div>
-                    <div class="stat-icon" style="background: linear-gradient(135deg, #ec4899 0%, #f472b6 100%); color: white;">
-                        <i class="bi bi-stars"></i>
+            <a th:href="@{/admin/featured-projects}" class="text-decoration-none">
+                <div class="stat-card animate-fade-in clickable-card" style="animation-delay: 0.2s">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="stat-label">Featured</div>
+                            <div class="stat-number" th:text="${featuredCount}">0</div>
+                            <small class="text-muted">
+                                <i class="bi bi-star-fill"></i> Highlighted projects
+                            </small>
+                        </div>
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #ec4899 0%, #f472b6 100%); color: white;">
+                            <i class="bi bi-stars"></i>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
 
+        <!-- Messages - Clickable -->
         <div class="col-xl-3 col-md-6">
-            <div class="stat-card animate-fade-in" style="animation-delay: 0.3s">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                        <div class="stat-label">Messages</div>
-                        <div class="stat-number" th:text="${messageCount}">0</div>
-                        <small class="text-muted">
-                            <i class="bi bi-envelope"></i> Contact inquiries
-                        </small>
-                    </div>
-                    <div class="stat-icon" style="background: linear-gradient(135deg, #06b6d4 0%, #22d3ee 100%); color: white;">
-                        <i class="bi bi-chat-dots-fill"></i>
+            <a th:href="@{/admin/messages}" class="text-decoration-none">
+                <div class="stat-card animate-fade-in clickable-card" style="animation-delay: 0.3s">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="stat-label">Messages</div>
+                            <div class="stat-number" th:text="${messageCount}">0</div>
+                            <small class="text-muted">
+                                <i class="bi bi-envelope"></i> Contact inquiries
+                            </small>
+                        </div>
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #06b6d4 0%, #22d3ee 100%); color: white;">
+                            <i class="bi bi-chat-dots-fill"></i>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
 
+        <!-- CV Entries - Clickable -->
         <div class="col-xl-3 col-md-6">
-            <div class="stat-card animate-fade-in" style="animation-delay: 0.4s">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                        <div class="stat-label">CV Entries</div>
-                        <div class="stat-number" th:text="${cvCount}">0</div>
-                        <small class="text-muted">
-                            <i class="bi bi-file-text"></i> Resume versions
-                        </small>
-                    </div>
-                    <div class="stat-icon" style="background: linear-gradient(135deg, #10b981 0%, #34d399 100%); color: white;">
-                        <i class="bi bi-person-badge-fill"></i>
+            <a th:href="@{/admin/cv}" class="text-decoration-none">
+                <div class="stat-card animate-fade-in clickable-card" style="animation-delay: 0.4s">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="stat-label">CV Entries</div>
+                            <div class="stat-number" th:text="${cvCount}">0</div>
+                            <small class="text-muted">
+                                <i class="bi bi-file-text"></i> Resume versions
+                            </small>
+                        </div>
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #10b981 0%, #34d399 100%); color: white;">
+                            <i class="bi bi-person-badge-fill"></i>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
     </div>
 
@@ -265,6 +277,36 @@
 </section>
 
 <style>
+    /* Clickable card styling */
+    .clickable-card {
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .clickable-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.15) !important;
+    }
+
+    /* Dark mode support for clickable cards */
+    [data-theme="dark"] .clickable-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+    }
+
+    [data-theme="dark"] .clickable-card:hover {
+        border-color: var(--primary);
+        box-shadow: 0 15px 35px rgba(99, 102, 241, 0.2) !important;
+    }
+
+    [data-theme="dark"] .stat-label {
+        color: var(--text-muted);
+    }
+
+    [data-theme="dark"] .stat-number {
+        color: var(--text);
+    }
+
     .list-group-item.glass {
         background: var(--glass-bg);
         backdrop-filter: blur(10px);

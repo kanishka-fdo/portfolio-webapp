@@ -4,141 +4,89 @@
 
 <section>
     <div th:if="${project != null}">
-        <!-- Back Button -->
         <div class="mb-4">
-            <a th:href="@{/projects}" class="btn btn-outline-secondary btn-sm">
-                <i class="bi bi-arrow-left me-2"></i>Back to Projects
+            <a th:href="@{/projects}" class="btn-pop-secondary py-2 px-3" style="font-size: 0.88rem;">
+                <i class="bi bi-arrow-left me-1"></i>Back to All Projects
             </a>
         </div>
 
-        <!-- Project Card -->
-        <div class="card rounded-4 shadow border-0 overflow-hidden">
-            <!-- Project Image -->
-            <div th:if="${project.imageUrl != null and !#strings.isEmpty(project.imageUrl)}"
-                 style="height: 400px; overflow: hidden; background: #f8f9fa;">
-                <img th:src="@{${project.imageUrl}}"
-                     class="w-100 h-100"
-                     th:alt="${project.title}"
-                     style="object-fit: cover;">
-            </div>
-
-            <!-- Placeholder if no image -->
-            <div th:unless="${project.imageUrl != null and !#strings.isEmpty(project.imageUrl)}"
-                 class="project-placeholder-large">
-                <i class="bi bi-image" style="font-size: 6rem; opacity: 0.3;"></i>
-            </div>
-
-            <div class="card-body p-4 p-md-5">
-                <!-- Title and Featured Badge -->
-                <div class="mb-4">
-                    <h1 class="h2 fw-bold mb-2" th:text="${project.title}">Project Title</h1>
-                    <p class="text-muted lead mb-3"
-                       th:if="${project.subtitle != null and !#strings.isEmpty(project.subtitle)}"
-                       th:text="${project.subtitle}">
-                        Project Subtitle
-                    </p>
-                    <span th:if="${project.featured}"
-                          class="badge bg-warning text-dark fs-6">
-                        <i class="bi bi-star-fill me-1"></i>Featured Project
-                    </span>
-                </div>
-
-                <!-- Tech Stack -->
-                <div class="mb-4">
-                    <h4 class="h5 fw-bold mb-3">
-                        <i class="bi bi-stack text-primary me-2"></i>Technologies Used
-                    </h4>
-                    <div class="d-flex flex-wrap gap-2">
-                        <span th:each="tech : ${#strings.arraySplit(project.techStack, ',')}"
-                              class="badge bg-primary text-white">
-                            <span th:text="${#strings.trim(tech)}">Technology</span>
-                        </span>
+        <div class="row g-5">
+            <!-- Left: Hero Image & Overview -->
+            <div class="col-lg-8">
+                <div class="rounded-4 overflow-hidden mb-4" style="aspect-ratio: 16/9; background: #111116; border: 1px solid var(--line);">
+                    <img th:if="${project.imageUrl != null and !#strings.isEmpty(project.imageUrl)}"
+                         th:src="@{${project.imageUrl}}"
+                         class="w-100 h-100"
+                         style="object-fit: cover;"
+                         th:alt="${project.title}">
+                    <div th:unless="${project.imageUrl != null and !#strings.isEmpty(project.imageUrl)}" class="w-100 h-100 d-flex align-items-center justify-content-center text-muted">
+                        <i class="bi bi-code-slash fs-1 text-white opacity-50"></i>
                     </div>
                 </div>
 
-                <!-- Short Description -->
-                <div th:if="${project.shortDescription != null and !#strings.isEmpty(project.shortDescription)}"
-                     class="mb-4">
-                    <h4 class="h5 fw-bold mb-3">
-                        <i class="bi bi-file-text text-primary me-2"></i>Overview
-                    </h4>
-                    <p class="lead" th:text="${project.shortDescription}">Short description</p>
-                </div>
+                <div class="p-4 p-md-5 rounded-4 mb-4" style="background: var(--bg-card); border: 1px solid var(--line);">
+                    <h1 class="display-6 fw-bold mb-2" th:text="${project.title}">Project Title</h1>
+                    <p class="fs-5 text-white fw-semibold mb-4" th:if="${project.subtitle != null and !#strings.isEmpty(project.subtitle)}" th:text="${project.subtitle}">Subtitle</p>
 
-                <!-- Full Description -->
-                <div th:if="${project.description != null and !#strings.isEmpty(project.description)}"
-                     class="mb-4">
-                    <h4 class="h5 fw-bold mb-3">
-                        <i class="bi bi-info-circle text-primary me-2"></i>Description
-                    </h4>
-                    <div class="card border-0 bg-light p-4 rounded-3">
-                        <p class="mb-0" th:text="${project.description}">Full description</p>
+                    <h4 class="h5 fw-bold text-white mb-2">Overview</h4>
+                    <p class="mb-4" style="color: #e2e8f0; font-size: 1.1rem; line-height: 1.85;" th:text="${project.shortDescription}">Short description</p>
+
+                    <div th:if="${project.description != null and !#strings.isEmpty(project.description)}" class="pt-4 border-top border-secondary">
+                        <h4 class="h5 fw-bold text-white mb-3">In-Depth Architecture &amp; Implementation</h4>
+                        <div class="p-4 rounded-3" style="background: #14141c; border: 1px solid var(--line-strong); color: #f1f5f9; line-height: 1.85; white-space: pre-line; font-size: 1.05rem;" th:text="${project.description}">
+                            Full description
+                        </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Project Links -->
-                <div class="mb-4">
-                    <h4 class="h5 fw-bold mb-3">
-                        <i class="bi bi-link-45deg text-primary me-2"></i>Project Links
-                    </h4>
-                    <div class="d-flex gap-3 flex-wrap">
-                        <a th:if="${project.githubUrl != null and !#strings.isEmpty(project.githubUrl)}"
-                           th:href="${project.githubUrl}"
-                           target="_blank"
-                           class="btn btn-dark btn-lg">
-                            <i class="bi bi-github me-2"></i>View Source Code
-                        </a>
+            <!-- Right: Sticky Specs Sidebar -->
+            <div class="col-lg-4">
+                <div class="p-4 rounded-4 sticky-top" style="top: 100px; background: var(--bg-card); border: 1px solid var(--line);">
+                    <h3 class="h5 fw-bold text-white mb-3 pb-2 border-bottom border-dark">
+                        <i class="bi bi-sliders text-white me-2"></i>Project Specs
+                    </h3>
+
+                    <div class="d-grid gap-2 mb-4">
                         <a th:if="${project.liveUrl != null and !#strings.isEmpty(project.liveUrl)}"
                            th:href="${project.liveUrl}"
                            target="_blank"
-                           class="btn btn-primary btn-lg">
-                            <i class="bi bi-box-arrow-up-right me-2"></i>Live Demo
+                           class="btn-pop-primary justify-content-center">
+                            <i class="bi bi-box-arrow-up-right me-1"></i>Launch Application
+                        </a>
+                        <a th:if="${project.githubUrl != null and !#strings.isEmpty(project.githubUrl)}"
+                           th:href="${project.githubUrl}"
+                           target="_blank"
+                           class="btn-pop-secondary justify-content-center">
+                            <i class="bi bi-github me-1"></i>View Code on GitHub
                         </a>
                     </div>
-                </div>
 
-                <!-- Created Date -->
-                <div class="text-muted small border-top pt-3">
-                    <i class="bi bi-calendar me-1"></i>
-                    Created on <span th:text="${#temporals.format(project.createdAt, 'MMMM dd, yyyy')}">Date</span>
+                    <div class="mb-4" th:if="${project.techStack != null}">
+                        <h6 class="text-white fw-bold text-uppercase small mb-2">Technologies Used</h6>
+                        <div class="d-flex flex-wrap gap-2">
+                            <span th:each="tech : ${#strings.arraySplit(project.techStack, ',')}" class="tech-tag-chip" th:text="${#strings.trim(tech)}">Technology</span>
+                        </div>
+                    </div>
+
+                    <div class="pt-3 border-top border-dark text-muted small">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Status:</span>
+                            <span class="text-white fw-bold">✓ Production Ready</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Date Created:</span>
+                            <span class="text-white" th:text="${#temporals.format(project.createdAt, 'yyyy-MM-dd')}">Date</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <!-- Navigation -->
-        <div class="text-center mt-4">
-            <a th:href="@{/projects}" class="btn btn-outline-primary">
-                <i class="bi bi-grid me-2"></i>View All Projects
-            </a>
-        </div>
     </div>
 
-    <!-- Project Not Found -->
     <div th:unless="${project != null}" class="text-center py-5">
-        <div class="card border-0 shadow-sm p-5">
-            <i class="bi bi-exclamation-triangle text-warning" style="font-size: 5rem;"></i>
-            <h2 class="h4 mt-4 mb-2">Project Not Found</h2>
-            <p class="text-muted mb-4">The project you're looking for doesn't exist.</p>
-            <a th:href="@{/projects}" class="btn btn-primary">
-                <i class="bi bi-arrow-left me-2"></i>Back to Projects
-            </a>
-        </div>
+        <p class="text-muted">The requested project could not be found.</p>
+        <a th:href="@{/projects}" class="btn-pop-secondary">Return to Projects</a>
     </div>
 </section>
-
-<style>
-    .project-placeholder-large {
-        height: 400px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-    }
-
-    .badge.fs-6 {
-        padding: 0.5rem 1rem;
-        font-weight: 500;
-    }
-</style>
 </html>

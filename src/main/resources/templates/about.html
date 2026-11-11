@@ -1,140 +1,131 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layout :: layout(~{::section}, 'About Me')}">
+      th:replace="~{layout :: layout(~{::section}, 'About — Kanishka Fernando')}">
 
 <section>
     <div class="row justify-content-center">
         <div class="col-lg-10">
-
-            <div class="text-center mb-5 animate-fade-in">
-                <h1 class="display-5 fw-bold mb-3">
-                    <i class="bi bi-person-circle" style="color: var(--primary);"></i> About Me
-                </h1>
-                <p class="lead text-muted">Learn more about my journey, skills, and aspirations</p>
+            
+            <!-- Section Header -->
+            <div class="text-center mb-5" data-reveal>
+                <div class="section-meta-tag mb-2">03 / PROFILE &amp; BACKGROUND</div>
+                <h1 class="display-5 fw-bold mb-3">About Kanishka Fernando</h1>
+                <p class="text-muted mx-auto" style="max-width: 600px;">
+                    Information Systems Engineering undergraduate at the Sri Lanka Institute of Information Technology (SLIIT).
+                </p>
             </div>
 
-            <div th:if="${cv != null}" class="mb-5">
-                <div class="card shadow-sm animate-fade-in" style="animation-delay: 0.1s">
-                    <div class="card-body p-5">
-                        <div class="row align-items-center">
-
-                            <div class="col-md-4 text-center mb-4 mb-md-0">
-
-                                <!-- ✅ This makes uploaded photo appear on About -->
-                                <div th:if="${cv.profilePhotoUrl != null and !#strings.isEmpty(cv.profilePhotoUrl)}">
-                                    <img th:src="@{${cv.profilePhotoUrl}}"
-                                         alt="Profile Photo"
-                                         class="profile-photo mb-3">
-                                </div>
-
-                                <!-- fallback -->
-                                <div th:unless="${cv.profilePhotoUrl != null and !#strings.isEmpty(cv.profilePhotoUrl)}" class="mb-3">
-                                    <img th:src="@{/img/default-profile.jpg}"
-                                         alt="Profile Photo"
-                                         class="profile-photo mb-3">
-                                </div>
-
-                                <h2 class="h4 fw-bold" th:text="${cv.fullName}">Name</h2>
-                                <p class="text-muted mb-3" th:text="${cv.title}">Title</p>
-
-                                <div class="d-flex flex-column gap-2 text-start">
-                                    <div th:if="${cv.email}">
-                                        <i class="bi bi-envelope" style="color: var(--primary);"></i>
-                                        <a th:href="'mailto:' + ${cv.email}"
-                                           class="text-decoration-none ms-2"
-                                           th:text="${cv.email}">Email</a>
-                                    </div>
-                                    <div th:if="${cv.phone}">
-                                        <i class="bi bi-telephone" style="color: var(--primary);"></i>
-                                        <span class="ms-2" th:text="${cv.phone}">Phone</span>
-                                    </div>
-                                    <div th:if="${cv.location}">
-                                        <i class="bi bi-geo-alt" style="color: var(--primary);"></i>
-                                        <span class="ms-2" th:text="${cv.location}">Location</span>
-                                    </div>
-                                </div>
-
-                                <div class="d-flex gap-3 justify-content-center mt-4">
-                                    <a th:if="${cv.githubUrl}" th:href="${cv.githubUrl}" target="_blank"
-                                       class="btn btn-outline-dark btn-sm">
-                                        <i class="bi bi-github"></i>
-                                    </a>
-                                    <a th:if="${cv.linkedinUrl}" th:href="${cv.linkedinUrl}" target="_blank"
-                                       class="btn btn-outline-primary btn-sm">
-                                        <i class="bi bi-linkedin"></i>
-                                    </a>
-                                    <a th:if="${cv.websiteUrl}" th:href="${cv.websiteUrl}" target="_blank"
-                                       class="btn btn-outline-info btn-sm">
-                                        <i class="bi bi-globe"></i>
-                                    </a>
-                                </div>
-
-                            </div>
-
-                            <div class="col-md-8">
-                                <div th:if="${cv.summary}" class="mb-4">
-                                    <h3 class="h5 fw-bold mb-3">
-                                        <i class="bi bi-file-text" style="color: var(--primary);"></i> Professional Summary
-                                    </h3>
-                                    <p style="white-space: pre-line;" th:text="${cv.summary}">Summary</p>
-                                </div>
-
-                                <div th:if="${cv.skills}">
-                                    <h3 class="h5 fw-bold mb-3">
-                                        <i class="bi bi-tools" style="color: var(--info);"></i> Skills & Technologies
-                                    </h3>
-                                    <p style="white-space: pre-line;" th:text="${cv.skills}">Skills</p>
-                                </div>
-                            </div>
-
+            <!-- Profile Showcase Grid -->
+            <div class="p-4 p-md-5 rounded-4 mb-5" style="background: var(--bg-card); border: 1px solid var(--line); backdrop-filter: blur(16px);" th:if="${cv != null}" data-reveal>
+                <div class="row align-items-center g-5">
+                    
+                    <!-- Left Photo Card (RECTANGULAR, UPRIGHT, NO ROTATING CIRCLE) -->
+                    <div class="col-md-5">
+                        <div class="p-2 rounded-4 mx-auto" style="border: 1px solid var(--line-strong); background: #111116; max-width: 360px; box-shadow: 0 20px 45px rgba(0,0,0,0.8), 0 0 30px rgba(255,255,255,0.08);">
+                            <img th:if="${cv.profilePhotoUrl != null and !#strings.isEmpty(cv.profilePhotoUrl)}"
+                                 th:src="@{${cv.profilePhotoUrl}}"
+                                 alt="Kanishka Fernando"
+                                 class="w-100 rounded-4"
+                                 style="aspect-ratio: 4/5; object-fit: cover; object-position: top center;">
+                            <img th:unless="${cv.profilePhotoUrl != null and !#strings.isEmpty(cv.profilePhotoUrl)}"
+                                 th:src="@{/img/default-profile.jpg}"
+                                 alt="Profile Photo"
+                                 class="w-100 rounded-4"
+                                 style="aspect-ratio: 4/5; object-fit: cover; object-position: top center;">
                         </div>
                     </div>
-                </div>
 
-                <div th:if="${cv.experience}" class="card shadow-sm mt-4 animate-fade-in" style="animation-delay: 0.2s">
-                    <div class="card-body p-5">
-                        <h3 class="h4 fw-bold mb-4">
-                            <i class="bi bi-briefcase-fill" style="color: var(--secondary);"></i> Work Experience
-                        </h3>
-                        <div style="white-space: pre-line;" th:text="${cv.experience}">Experience</div>
-                    </div>
-                </div>
+                    <!-- Right Bio -->
+                    <div class="col-md-7">
+                        <h2 class="display-6 fw-bold text-white mb-2" th:text="${cv.fullName}">Kanishka Fernando</h2>
+                        <p class="fs-5 text-white fw-semibold mb-4" th:text="${cv.title}">Full Stack Developer</p>
 
-                <div th:if="${cv.education}" class="card shadow-sm mt-4 animate-fade-in" style="animation-delay: 0.3s">
-                    <div class="card-body p-5">
-                        <h3 class="h4 fw-bold mb-4">
-                            <i class="bi bi-mortarboard-fill" style="color: var(--success);"></i> Education
-                        </h3>
-                        <div style="white-space: pre-line;" th:text="${cv.education}">Education</div>
-                    </div>
-                </div>
+                        <div th:if="${cv.summary != null and !#strings.isEmpty(cv.summary)}" class="mb-4">
+                            <h4 class="h6 fw-bold text-uppercase text-white mb-2" style="letter-spacing: 0.1em;">Professional Background</h4>
+                            <p class="mb-0" style="color: #e2e8f0; line-height: 1.85; white-space: pre-line; font-size: 1.05rem;" th:text="${cv.summary}">Summary</p>
+                        </div>
 
-                <div th:if="${cv.certifications}" class="card shadow-sm mt-4 animate-fade-in" style="animation-delay: 0.4s">
-                    <div class="card-body p-5">
-                        <h3 class="h4 fw-bold mb-4">
-                            <i class="bi bi-award-fill" style="color: var(--warning);"></i> Certifications & Achievements
-                        </h3>
-                        <div style="white-space: pre-line;" th:text="${cv.certifications}">Certifications</div>
+                        <!-- Direct contact information -->
+                        <div class="contact-item-row mb-4">
+                            <div class="d-flex flex-column gap-3">
+                                <div th:if="${cv.email != null and !#strings.isEmpty(cv.email)}" class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="bi bi-envelope-fill text-white fs-5"></i>
+                                        <span class="text-white fw-semibold" th:text="${cv.email}">Email</span>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-outline-light rounded-pill px-3 py-1"
+                                            th:attr="onclick='copyToClipboard(\'' + ${cv.email} + '\', \'Email copied to clipboard! 📋\')'"
+                                            style="font-size: 0.8rem; font-weight: 600;">
+                                        <i class="bi bi-clipboard me-1"></i>Copy
+                                    </button>
+                                </div>
+                                <div th:if="${cv.phone != null and !#strings.isEmpty(cv.phone)}" class="d-flex align-items-center gap-2">
+                                    <i class="bi bi-telephone-fill text-white fs-5"></i>
+                                    <span class="text-white fw-semibold" th:text="${cv.phone}">Phone</span>
+                                </div>
+                                <div th:if="${cv.location != null and !#strings.isEmpty(cv.location)}" class="d-flex align-items-center gap-2">
+                                    <i class="bi bi-geo-alt-fill text-white fs-5"></i>
+                                    <span class="text-white fw-semibold" th:text="${cv.location}">Location</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Social buttons -->
+                        <div class="d-flex gap-3 flex-wrap">
+                            <a th:if="${cv.githubUrl != null and !#strings.isEmpty(cv.githubUrl)}" th:href="${cv.githubUrl}" target="_blank" class="btn-pop-secondary">
+                                <i class="bi bi-github me-1"></i>GitHub
+                            </a>
+                            <a th:if="${cv.linkedinUrl != null and !#strings.isEmpty(cv.linkedinUrl)}" th:href="${cv.linkedinUrl}" target="_blank" class="btn-pop-secondary">
+                                <i class="bi bi-linkedin me-1"></i>LinkedIn
+                            </a>
+                            <a th:href="@{/contact}" class="btn-pop-primary">
+                                <i class="bi bi-chat-dots me-1"></i>Contact Me
+                            </a>
+                        </div>
                     </div>
+
                 </div>
             </div>
 
-            <div th:unless="${cv != null}" class="text-center py-5 animate-fade-in">
-                <div class="card shadow-sm">
-                    <div class="card-body p-5">
-                        <i class="bi bi-person-x" style="font-size: 5rem; opacity: 0.2; color: var(--primary);"></i>
-                        <h3 class="h4 mt-4 mb-3">No CV Information Available</h3>
-                        <p class="text-muted">CV details will be displayed here once configured by the administrator.</p>
-                    </div>
+            <!-- Skills Section -->
+            <div class="p-4 p-md-5 rounded-4 mb-4" style="background: var(--bg-card); border: 1px solid var(--line);" th:if="${cv != null and cv.skills != null and !#strings.isEmpty(cv.skills)}" data-reveal>
+                <h3 class="h5 fw-bold text-white mb-3 d-flex align-items-center gap-2">
+                    <i class="bi bi-cpu-fill text-white"></i>
+                    <span>Skills &amp; Technologies</span>
+                </h3>
+                <div class="d-flex flex-wrap gap-2">
+                    <span th:each="s : ${#strings.arraySplit(cv.skills, ',')}" class="tech-tag-chip fs-6 py-2 px-3">
+                        <i class="bi bi-check-circle-fill text-white me-2"></i>
+                        <span th:text="${#strings.trim(s)}">Skill</span>
+                    </span>
                 </div>
             </div>
 
-            <div class="text-center mt-5 animate-fade-in" style="animation-delay: 0.5s">
-                <h3 class="h4 fw-bold mb-3">Interested in Working Together?</h3>
-                <p class="text-muted mb-4">Feel free to reach out for collaborations or opportunities!</p>
-                <a th:href="@{/contact}" class="btn btn-primary btn-lg">
-                    <i class="bi bi-envelope"></i> Contact Me
-                </a>
+            <!-- Work Experience -->
+            <div class="p-4 p-md-5 rounded-4 mb-4" style="background: var(--bg-card); border: 1px solid var(--line-strong);" th:if="${cv != null and cv.experience != null and !#strings.isEmpty(cv.experience)}" data-reveal>
+                <h3 class="h5 fw-bold text-white mb-3 d-flex align-items-center gap-2">
+                    <i class="bi bi-briefcase-fill text-white"></i>
+                    <span>Work Experience</span>
+                </h3>
+                <div style="color: #e2e8f0; line-height: 1.85; white-space: pre-line; font-size: 1.05rem;" th:text="${cv.experience}">Experience</div>
+            </div>
+
+            <!-- Education -->
+            <div class="p-4 p-md-5 rounded-4 mb-4" style="background: var(--bg-card); border: 1px solid var(--line-strong);" th:if="${cv != null and cv.education != null and !#strings.isEmpty(cv.education)}" data-reveal>
+                <h3 class="h5 fw-bold text-white mb-3 d-flex align-items-center gap-2">
+                    <i class="bi bi-mortarboard-fill text-white"></i>
+                    <span>Education</span>
+                </h3>
+                <div style="color: #e2e8f0; line-height: 1.85; white-space: pre-line; font-size: 1.05rem;" th:text="${cv.education}">Education</div>
+            </div>
+
+            <!-- Certifications -->
+            <div class="p-4 p-md-5 rounded-4 mb-4" style="background: var(--bg-card); border: 1px solid var(--line-strong);" th:if="${cv != null and cv.certifications != null and !#strings.isEmpty(cv.certifications)}" data-reveal>
+                <h3 class="h5 fw-bold text-white mb-3 d-flex align-items-center gap-2">
+                    <i class="bi bi-patch-check-fill text-white"></i>
+                    <span>Certifications &amp; Achievements</span>
+                </h3>
+                <div style="color: #e2e8f0; line-height: 1.85; white-space: pre-line; font-size: 1.05rem;" th:text="${cv.certifications}">Certifications</div>
             </div>
 
         </div>

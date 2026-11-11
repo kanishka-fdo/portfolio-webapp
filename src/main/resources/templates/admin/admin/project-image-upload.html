@@ -1,0 +1,227 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::section}, 'Upload Project Image')}">
+
+<section>
+    <div class="mb-4">
+        <a th:href="@{/admin}" class="text-decoration-none">
+            <i class="bi bi-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-body p-5">
+                    <h1 class="h3 fw-bold mb-4 text-center">
+                        <i class="bi bi-image"></i> Upload Project Image
+                    </h1>
+                    <p class="text-muted text-center mb-4">Upload cover images for your portfolio projects</p>
+
+                    <!-- Success Alert -->
+                    <div id="alertSuccess" class="alert alert-success" style="display: none;">
+                        <i class="bi bi-check-circle-fill"></i> <span id="successMessage"></span>
+                    </div>
+
+                    <!-- Error Alert -->
+                    <div id="alertError" class="alert alert-danger" style="display: none;">
+                        <i class="bi bi-exclamation-circle-fill"></i> <span id="errorMessage"></span>
+                    </div>
+
+                    <!-- Upload Zone -->
+                    <div id="uploadZone" class="upload-zone text-center p-5 mb-4">
+                        <i class="bi bi-cloud-upload" style="font-size: 4rem; color: var(--primary); opacity: 0.5;"></i>
+                        <h4 class="mt-3 mb-2">Click to upload or drag and drop</h4>
+                        <p class="text-muted mb-0">JPG, PNG, GIF, or WEBP (Max 10MB)</p>
+                        <input type="file" id="fileInput" accept="image/*" style="display: none;">
+                    </div>
+
+                    <!-- Loading -->
+                    <div id="loading" class="text-center py-4" style="display: none;">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="text-muted mt-3 mb-0">Uploading...</p>
+                    </div>
+
+                    <!-- Preview Container -->
+                    <div id="previewContainer" style="display: none;">
+                        <h5 class="fw-bold mb-3">Preview:</h5>
+                        <div class="mb-3">
+                            <img id="previewImage" class="img-fluid rounded" style="max-height: 400px; width: 100%; object-fit: contain; background: #f8f9fa;" alt="Preview">
+                        </div>
+
+                        <div class="alert alert-info">
+                            <strong>Image URL:</strong>
+                            <div class="input-group mt-2">
+                                <input type="text" id="imageUrl" class="form-control" readonly>
+                                <button class="btn btn-outline-secondary" type="button" onclick="copyUrl()">
+                                    <i class="bi bi-clipboard"></i> Copy
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-warning">
+                            <i class="bi bi-info-circle"></i> Copy this URL and paste it into the "Image URL" field when creating or editing a project.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .upload-zone {
+        border: 3px dashed var(--border);
+        border-radius: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: var(--glass-bg);
+    }
+
+    .upload-zone:hover {
+        border-color: var(--primary);
+        background: var(--card-bg);
+    }
+
+    .upload-zone.drag-over {
+        border-color: var(--primary);
+        background: rgba(99, 102, 241, 0.1);
+    }
+
+    [data-theme="dark"] .upload-zone {
+        border-color: var(--border);
+        background: var(--card-bg);
+    }
+
+    [data-theme="dark"] .upload-zone:hover {
+        border-color: var(--primary);
+    }
+
+    [data-theme="dark"] #previewImage {
+        background: #2d2d2d !important;
+    }
+</style>
+
+<script>
+    const uploadZone = document.getElementById('uploadZone');
+    const fileInput = document.getElementById('fileInput');
+    const loading = document.getElementById('loading');
+    const previewContainer = document.getElementById('previewContainer');
+    const previewImage = document.getElementById('previewImage');
+    const imageUrl = document.getElementById('imageUrl');
+    const alertSuccess = document.getElementById('alertSuccess');
+    const alertError = document.getElementById('alertError');
+    const successMessage = document.getElementById('successMessage');
+    const errorMessage = document.getElementById('errorMessage');
+
+    // Click to upload
+    uploadZone.addEventListener('click', () => fileInput.click());
+
+    // Drag and drop
+    uploadZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadZone.classList.add('drag-over');
+    });
+
+    uploadZone.addEventListener('dragleave', () => {
+        uploadZone.classList.remove('drag-over');
+    });
+
+    uploadZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadZone.classList.remove('drag-over');
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            handleFile(files[0]);
+        }
+    });
+
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            handleFile(e.target.files[0]);
+        }
+    });
+
+    function handleFile(file) {
+        console.log('File selected:', file.name);
+
+        if (!file.type.startsWith('image/')) {
+            showError('Please select an image file');
+            return;
+        }
+
+        if (file.size > 10 * 1024 * 1024) {
+            showError('File size must be less than 10MB');
+            return;
+        }
+
+        uploadFile(file);
+    }
+
+    function uploadFile(file) {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        loading.style.display = 'block';
+        previewContainer.style.display = 'none';
+        hideAlerts();
+
+        console.log('Uploading to: /admin/upload-project-image');
+
+        fetch('/admin/upload-project-image', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => {
+                console.log('Response status:', response.status);
+                return response.text();
+            })
+            .then(data => {
+                console.log('Response data:', data);
+                loading.style.display = 'none';
+
+                if (data.startsWith('error:')) {
+                    showError(data.substring(6));
+                } else {
+                    showSuccess('Image uploaded successfully! Copy the URL below.');
+                    previewImage.src = data;
+                    imageUrl.value = window.location.origin + data;
+                    previewContainer.style.display = 'block';
+                }
+            })
+            .catch(error => {
+                console.error('Upload error:', error);
+                loading.style.display = 'none';
+                showError('Upload failed: ' + error.message);
+            });
+    }
+
+    function copyUrl() {
+        imageUrl.select();
+        navigator.clipboard.writeText(imageUrl.value).then(() => {
+            showSuccess('URL copied to clipboard!');
+        }).catch(() => {
+            showError('Failed to copy URL');
+        });
+    }
+
+    function showSuccess(message) {
+        successMessage.textContent = message;
+        alertSuccess.style.display = 'block';
+        alertError.style.display = 'none';
+    }
+
+    function showError(message) {
+        errorMessage.textContent = message;
+        alertError.style.display = 'block';
+        alertSuccess.style.display = 'none';
+    }
+
+    function hideAlerts() {
+        alertSuccess.style.display = 'none';
+        alertError.style.display = 'none';
+    }
+</script>
+</html>

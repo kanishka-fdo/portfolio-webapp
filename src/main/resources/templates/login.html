@@ -1,47 +1,52 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layout :: layout(~{::section}, 'Login')}">
+      th:replace="~{layout :: layout(~{::section}, 'Admin Authentication')}">
 
-<section>
-    <h1 class="h3 fw-bold mb-4">Admin Login</h1>
-
-    <!-- Error Message -->
-    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert" style="max-width:420px">
-        <i class="bi bi-exclamation-triangle-fill me-2"></i>
-        <span th:text="${error}">Invalid username or password</span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-
-    <!-- Success Message (Logout) -->
-    <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert" style="max-width:420px">
-        <i class="bi bi-check-circle-fill me-2"></i>
-        <span th:text="${message}">You have been logged out successfully</span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-
-    <!-- Login Form -->
-    <form th:action="@{/login}" method="post"
-          class="card rounded-4 shadow-sm p-3 p-md-4" style="max-width:420px">
-
-        <div class="mb-3">
-            <label for="username" class="form-label">Username</label>
-            <input type="text" id="username" name="username" class="form-control" required autofocus>
+<section class="d-flex justify-content-center align-items-center" style="min-height: 55vh;">
+    <div style="max-width: 420px; width: 100%;">
+        
+        <div class="text-center mb-4">
+            <div class="float-badge-icon mx-auto mb-3" style="width: 56px; height: 56px; font-size: 1.6rem; background: rgba(255, 255, 255, 0.08); border-color: var(--line-strong);">
+                <i class="bi bi-shield-lock-fill text-white"></i>
+            </div>
+            <h2 class="h3 fw-bold text-white mb-1">Admin Portal</h2>
+            <p class="text-muted small">Enter credentials to manage portfolio and messages</p>
         </div>
 
-        <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
-            <input type="password" id="password" name="password" class="form-control" required>
+        <div th:if="${error}" class="p-3 mb-4 rounded-3 small" style="background: rgba(255, 255, 255, 0.08); border: 1px solid var(--line-strong); color: #ffffff;">
+            <i class="bi bi-exclamation-triangle-fill me-1"></i>
+            <span th:text="${error}">Invalid username or password.</span>
         </div>
 
-        <button class="btn btn-dark w-100" type="submit">
-            <i class="bi bi-box-arrow-in-right me-2"></i>Login
-        </button>
+        <div th:if="${message}" class="p-3 mb-4 rounded-3 small" style="background: rgba(255, 255, 255, 0.08); border: 1px solid var(--line-strong); color: #ffffff;">
+            <i class="bi bi-check-circle-fill me-1"></i>
+            <span th:text="${message}">Logged out successfully.</span>
+        </div>
 
-        <div class="text-center mt-3">
-            <a th:href="@{/}" class="text-decoration-none text-muted">
-                <i class="bi bi-arrow-left me-1"></i>Back to Home
+        <div class="p-4 p-md-5 rounded-4" style="background: var(--bg-card); border: 1px solid var(--line);">
+            <form th:action="@{/login}" method="post">
+                <div class="mb-3">
+                    <label for="username" class="form-label text-white small fw-semibold">Username</label>
+                    <input type="text" id="username" name="username" class="form-control" placeholder="admin" required autofocus style="background: #0a0a0e; border: 1px solid var(--line); color: #fff; padding: 0.75rem;">
+                </div>
+
+                <div class="mb-4">
+                    <label for="password" class="form-label text-white small fw-semibold">Password</label>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required style="background: #0a0a0e; border: 1px solid var(--line); color: #fff; padding: 0.75rem;">
+                </div>
+
+                <button type="submit" class="btn-pop-primary w-100 justify-content-center py-3 border-0">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>Login to Dashboard
+                </button>
+            </form>
+        </div>
+
+        <div class="text-center mt-4">
+            <a th:href="@{/}" class="text-muted text-decoration-none small">
+                <i class="bi bi-arrow-left me-1"></i>Return to Homepage
             </a>
         </div>
-    </form>
+
+    </div>
 </section>
 </html>
