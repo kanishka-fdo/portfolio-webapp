@@ -20,7 +20,7 @@ public class Project {
     @Column(nullable = false, length = 500)
     private String shortDescription;
 
-    @Column(columnDefinition = "VARCHAR(MAX)")
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     private String techStack;
